@@ -1,28 +1,206 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "aluno.h"
 
-typedef struct tpAluno {
-    char *cpf;
-    char *nome;
-    char *email;
-    char *senha;
-    char *curso;
-    char *universidade;
-} tpAluno; 
+tpAluno *listaAlunos = NULL; 
+int qtdAlunos = 0;           
 
-int read_aluno(char *cpf, tpAluno *aluno) {
-    return 0;
+tpAluno tipoAluno; // caso queira usar diretamente em main
+
+void listarAlunos() {
+    if(qtdAlunos == 0){
+        printf("\nNenhum aluno cadastrado ainda.\n\n");
+        return;
+    }
+
+    printf("\n===== LISTA DE TODOS OS ALUNOS =====\n");
+    for(int i = 0; i < qtdAlunos; i++){
+        printf("[%d]\n", i+1);
+        printf("  Nome:         %s\n", listaAlunos[i].nome);
+        printf("  CPF:          %s\n", listaAlunos[i].cpf);
+        printf("  Email:        %s\n", listaAlunos[i].email);
+        printf("  Curso:        %s\n", listaAlunos[i].curso);
+        printf("  Universidade: %s\n", listaAlunos[i].universidade);
+        printf("-------------------------------------\n");
+    }
+    printf("\n");
 }
 
-int delete_Aluno(char *cpf){
-    return 0;
+void carregarAlunos() {
+    FILE *fp = fopen("Aluno/dados.json", "r");
+    if(!fp){
+        printf("Nenhum arquivo de alunos encontrado, começando vazio.\n");
+        return;
+    }
+
+    char linha[256];
+    tpAluno aluno;
+    qtdAlunos = 0;
+    listaAlunos = NULL;
+
+    while(fgets(linha, sizeof(linha), fp)){
+        // pegar cada campo usando sscanf
+        if(strstr(linha, "\"cpf\"")){
+            sscanf(linha, " \"%*[^:\"]\" : \"%[^\"]\"", aluno.cpf);
+        } else if(strstr(linha, "\"nome\"")){
+            sscanf(linha, " \"%*[^:\"]\" : \"%[^\"]\"", aluno.nome);
+        } else if(strstr(linha, "\"email\"")){
+            sscanf(linha, " \"%*[^:\"]\" : \"%[^\"]\"", aluno.email);
+        } else if(strstr(linha, "\"senha\"")){
+            sscanf(linha, " \"%*[^:\"]\" : \"%[^\"]\"", aluno.senha);
+        } else if(strstr(linha, "\"curso\"")){
+            sscanf(linha, " \"%*[^:\"]\" : \"%[^\"]\"", aluno.curso);
+        } else if(strstr(linha, "\"universidade\"")){
+            sscanf(linha, " \"%*[^:\"]\" : \"%[^\"]\"", aluno.universidade);
+            
+            // depois que pegou universidade, adiciona na lista
+            listaAlunos = realloc(listaAlunos, (qtdAlunos+1) * sizeof(tpAluno));
+            listaAlunos[qtdAlunos] = aluno;
+            qtdAlunos++;
+        }
+    }
+
+    fclose(fp);
+
+    printf("Carregados %d alunos do arquivo!\n", qtdAlunos);
+    listarAlunos();
 }
 
 int registrar(tpAluno *aluno) {
-    return 0;
+    // Caso 2: parâmetro inválido
+    if(aluno == NULL || strlen(aluno->cpf) == 0 || strlen(aluno->nome) == 0){
+        return 2;
+    }
+
+    // Caso 1: verificar se já existe CPF
+    for(int i = 0; i < qtdAlunos; i++){
+        if(strcmp(listaAlunos[i].cpf, aluno->cpf) == 0){
+            return 1; // CPF já existe
+        }
+    }
+
+    // Tentar adicionar na lista
+    tpAluno *novo = realloc(listaAlunos, (qtdAlunos + 1) * sizeof(tpAluno));
+    if(novo == NULL){
+        return 99; // caso 99: falha de memória/exceção
+    }
+
+    listaAlunos = novo;
+    listaAlunos[qtdAlunos] = *aluno;
+    qtdAlunos++;
+
+    // Impressão de confirmação
+    printf("\n[REGISTRADO]\n");
+    printf("Nome: %s | CPF: %s\n", aluno->nome, aluno->cpf);
+    printf("Agora temos %d alunos cadastrados.\n\n", qtdAlunos);
+    listarAlunos();
+
+    return 0; // caso 0: ok
+}
+
+void salvarJSON() {
+    FILE *fp;
+    printf("HORA DE SALVAR");
+    listarAlunos() ;
+    fp = fopen("Aluno/dados.json", "w");  // só abre e sobrescreve
+
+    if(!fp){
+        printf("Erro abrindo arquivo JSON\n");
+        return;
+    }
+
+    fprintf(fp, "[\n");
+    for(int i = 0; i < qtdAlunos; i++){
+        fprintf(fp,
+         "  {\n"
+         "    \"cpf\": \"%s\",\n"
+         "    \"nome\": \"%s\",\n"
+         "    \"email\": \"%s\",\n"
+         "    \"senha\": \"%s\",\n"
+         "    \"curso\": \"%s\",\n"
+         "    \"universidade\": \"%s\"\n"
+         "  }%s\n",
+         listaAlunos[i].cpf,
+         listaAlunos[i].nome,
+         listaAlunos[i].email,
+         listaAlunos[i].senha,
+         listaAlunos[i].curso,
+         listaAlunos[i].universidade,
+         (i == qtdAlunos-1 ? "" : ",")
+        );
+    }
+    fprintf(fp, "]\n");
+
+    fclose(fp);
+
+    printf("\n>> dados salvos em alunos/dados.json <<\n");
+}
+
+// apenas para evitar warnings
+int read_aluno(char *cpf, tpAluno *aluno) {
+    // Verifica parâmetros inválidos
+    if(cpf == NULL || aluno == NULL || strlen(cpf) == 0) {
+        return 2; // Parâmetro inválido -> caso de teste 3
+    }
+
+    // Busca na lista de alunos
+    for(int i = 0; i < qtdAlunos; i++) {
+        if(strcmp(listaAlunos[i].cpf, cpf) == 0) {
+            *aluno = listaAlunos[i]; // copia os dados para o ponteiro
+            return 0; // Ok (Aluno encontrado) -> caso de teste 1
+        }
+    }
+
+    return 1; // Aluno não encontrado -> caso de teste 2
+}
+
+
+int delete_Aluno(char *cpf) {
+    if(cpf == NULL || strlen(cpf) == 0) {
+        return 2; // Parâmetro inválido -> caso de teste 7
+    }
+
+    if(qtdAlunos == 0) {
+        return 1; // Falha ao deletar (lista vazia) -> caso de teste 6
+    }
+
+    for(int i = 0; i < qtdAlunos; i++) {
+        if(strcmp(listaAlunos[i].cpf, cpf) == 0) {
+            // Encontrou o aluno, remover da lista
+            for(int j = i; j < qtdAlunos - 1; j++) {
+                listaAlunos[j] = listaAlunos[j+1];
+            }
+            qtdAlunos--;
+
+            // Reduz o tamanho do array
+            tpAluno *tmp = realloc(listaAlunos, qtdAlunos * sizeof(tpAluno));
+            if(tmp != NULL || qtdAlunos == 0) {
+                listaAlunos = tmp;
+            } else {
+                return 99; // Cancelamento por exceção -> caso de teste 8
+            }
+            listarAlunos();
+            return 0; // Ok -> caso de teste 5
+        }
+    }
+
+    return 1; // Aluno não encontrado -> caso de teste 6
 }
 
 int login(char *email, char *senha) {
-    return 0;
+    if(email == NULL || senha == NULL || strlen(email) == 0 || strlen(senha) == 0) {
+        return 2; // Parâmetro inválido -> caso de teste 15
+    }
+
+    for(int i = 0; i < qtdAlunos; i++) {
+        if(strcmp(listaAlunos[i].email, email) == 0) {
+            if(strcmp(listaAlunos[i].senha, senha) == 0) {
+                printf("Login bem-sucedido! Bem-vindo, %s.\n", listaAlunos[i].nome);
+                return 0; // Ok -> caso de teste 13
+            } else {
+                return 1; // Falha no login (senha incorreta) -> caso de teste 14
+            }
+        }
+    }
+
+    return 1; // Falha no login (email não encontrado) -> caso de teste 14
 }
+
