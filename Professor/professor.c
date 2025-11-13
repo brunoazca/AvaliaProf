@@ -3,7 +3,23 @@
 tpProfessor *listaProfessores = NULL;
 int qtdProfessores = 0;
 
-static void listarProfessores(void);
+void listarProfessores() {
+    if(qtdProfessores == 0){
+        printf("\nNenhum professor cadastrado ainda.\n\n");
+        return;
+    }
+
+    printf("\n===== LISTA DE TODOS OS PROFESSORES =====\n");
+    for(int i = 0; i < qtdProfessores; i++){
+        printf("[%d]\n", i+1);
+        printf("  Nome:         %s\n", listaProfessores[i].nome);
+        printf("  CPF:          %s\n", listaProfessores[i].cpf);
+        printf("  Área:         %s\n", listaProfessores[i].area_de_atuacao);
+        printf("-------------------------------------\n");
+    }
+    printf("\n");
+}
+
 
 int read_Professor(char *cpf, tpProfessor *professor) {
     if (cpf == NULL || professor == NULL || strlen(cpf) == 0) {
@@ -51,9 +67,43 @@ int delete_Professor(char *cpf){
 }
 
 int create_Professor(tpProfessor *professor) {
+    if (professor == NULL || strlen(professor->cpf) == 0 || strlen(professor->nome) == 0) {
+        return 2;
+    }
+
+    for (int i = 0; i < qtdProfessores; i++) {
+        if (strcmp(listaProfessores[i].cpf, professor->cpf) == 0) {
+            return 1;
+        }
+    }
+
+    tpProfessor *novaLista = realloc(listaProfessores, (qtdProfessores + 1) * sizeof(tpProfessor));
+    if (novaLista == NULL) {
+        return 99;
+    }
+
+    listaProfessores = novaLista;
+    listaProfessores[qtdProfessores] = *professor;
+    qtdProfessores++;
+
+    listarProfessores();
     return 0;
 }
 
+
 int update_Professors(char *cpf, tpProfessor *professor) {
-    return 0;
+    if (cpf == NULL || professor == NULL || strlen(cpf) == 0) {
+        return 2;
+    }
+
+    for (int i = 0; i < qtdProfessores; i++) {
+        if (strcmp(listaProfessores[i].cpf, cpf) == 0) {
+            if (strlen(professor->nome) > 0) {
+                snprintf(listaProfessores[i].nome, sizeof(listaProfessores[i].nome), "%s", professor->nome);
+            }
+            return 0;
+        }
+    }
+
+    return 1;
 }
