@@ -11,6 +11,15 @@ typedef struct {
     char area_de_atuacao[150];
 } tpProfessor;
 
+// variável global (será definida em aluno.c)
+extern tpProfessor tipoProfessor;
+
+extern tpProfessor *listaProfessores;
+
+// quantidade atual
+extern int qtdProfessores;
+
+
 int read_Professor(char *cpf, tpProfessor *professor);
 int delete_Professor(char *cpf);
 int create_Professor(tpProfessor *professor);
