@@ -1,6 +1,10 @@
 #ifndef PROFESSOR_H
 #define PROFESSOR_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 typedef struct {
     char cpf[100];
     char nome[150];
