@@ -6,58 +6,105 @@
 tpDisciplina *listaDisciplinas = NULL;
 int qtdDisciplinas = 0;
 
-// definir qtd disciplinas, listadisciplinas
+static void listarDisciplinas(void);
 
-int read_Disciplina(char *codigo, tpDisciplina *tpDisciplina) {
-    // Verifica parâmetros inválidos
-    if (codigo == NULL || tpDisciplina || strlen(codigo)) {
-        return 2; // Parâmetro inválido -> caso de teste 3
+int read_Disciplina(char *codigo, tpDisciplina *disciplina) {
+    if (codigo == NULL || disciplina == NULL || strlen(codigo) == 0) {
+        return 2;
     }
-    for(int i = 0; i < qtdDisciplinas; i++) {
-        if(strcmp(listaDisciplinas[i].codigo, codigo) == 0) {
-            *tpDisciplina = listaDisciplina[i]; // copia os dados para o ponteiro
-            return 0; // Ok (Disciplina encontrada) -> caso de teste 1
+
+    for (int i = 0; i < qtdDisciplinas; i++) {
+        if (strcmp(listaDisciplinas[i].codigo, codigo) == 0) {
+            *disciplina = listaDisciplinas[i];
+            return 0;
         }
-    
-    return 1; // Disciplina não encontrada -> caso de teste 2
+    }
+
+    return 1;
 }
 
-int delete_Disciplina(char *codigo){
-    if(codigo == NULL || strlen(codigo) == 0) {
-        return 2; // Parâmetro inválido -> caso de teste 7
+int delete_Disciplina(char *codigo) {
+    if (codigo == NULL || strlen(codigo) == 0) {
+        return 2;
     }
 
-    if(qtdDisciplinas == 0) {
-        return 1; // Falha ao deletar (lista vazia) -> caso de teste 6
+    if (qtdDisciplinas == 0) {
+        return 1;
     }
 
-    for(int i = 0; i < qtdDisciplinas; i++) {
-        if(strcmp(listaDisciplinas[i].codigo, codigo) == 0) {
-            // Encontrou a disciplina, remover da lista
-            for(int j = i; j < qtdDisciplinas - 1; j++) {
-                listaDisciplinas[j] = listaDisciplinas[j+1];
+    for (int i = 0; i < qtdDisciplinas; i++) {
+        if (strcmp(listaDisciplinas[i].codigo, codigo) == 0) {
+            for (int j = i; j < qtdDisciplinas - 1; j++) {
+                listaDisciplinas[j] = listaDisciplinas[j + 1];
             }
-            qtdDisciplina--;
+            qtdDisciplinas--;
 
-            // Reduz o tamanho do array
             tpDisciplina *tmp = realloc(listaDisciplinas, qtdDisciplinas * sizeof(tpDisciplina));
-            if(tmp != NULL || qtdDisciplinas == 0) {
+            if (tmp != NULL || qtdDisciplinas == 0) {
                 listaDisciplinas = tmp;
             } else {
-                return 99; // Cancelamento por exceção -> caso de teste 8
+                return 99;
             }
-            listarDisciplina();
-            return 0; // Ok -> caso de teste 5
+            listarDisciplinas();
+            return 0;
         }
     }
 
-    return 1; // Disciplina não encontrada -> caso de teste 6
+    return 1;
 }
 
-int create_Disciplina(tpDisciplina *tpDisciplina) {
+int create_Disciplina(tpDisciplina *disciplina) {
+    if (disciplina == NULL || strlen(disciplina->codigo) == 0 || strlen(disciplina->nome) == 0) {
+        return 2;
+    }
+
+    for (int i = 0; i < qtdDisciplinas; i++) {
+        if (strcmp(listaDisciplinas[i].codigo, disciplina->codigo) == 0) {
+            return 1;
+        }
+    }
+
+    tpDisciplina *novaLista = realloc(listaDisciplinas, (qtdDisciplinas + 1) * sizeof(tpDisciplina));
+    if (novaLista == NULL) {
+        return 99;
+    }
+
+    listaDisciplinas = novaLista;
+    listaDisciplinas[qtdDisciplinas] = *disciplina;
+    qtdDisciplinas++;
+
+    listarDisciplinas();
     return 0;
 }
 
-int update_Disciplinas(char *codigo, tpDisciplina *tpDisciplina) {
-    return 0;
+int update_Disciplinas(char *codigo, tpDisciplina *disciplina) {
+    if (codigo == NULL || disciplina == NULL || strlen(codigo) == 0) {
+        return 2;
+    }
+
+    for (int i = 0; i < qtdDisciplinas; i++) {
+        if (strcmp(listaDisciplinas[i].codigo, codigo) == 0) {
+            if (strlen(disciplina->nome) > 0) {
+                snprintf(listaDisciplinas[i].nome, sizeof(listaDisciplinas[i].nome), "%s", disciplina->nome);
+            }
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
+static void listarDisciplinas(void) {
+    if (qtdDisciplinas == 0) {
+        printf("\nNenhuma disciplina cadastrada.\n");
+        return;
+    }
+
+    printf("\n===== LISTA DE DISCIPLINAS =====\n");
+    for (int i = 0; i < qtdDisciplinas; i++) {
+        printf("[%d]\n", i + 1);
+        printf("  Código: %s\n", listaDisciplinas[i].codigo);
+        printf("  Nome:   %s\n", listaDisciplinas[i].nome);
+    }
+    printf("================================\n");
 }

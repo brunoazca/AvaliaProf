@@ -3,7 +3,7 @@
 #include <string.h>
 #include "aluno_universidade.h"
 
-int link(tpAluno *tpAluno, tpUniversidade *tpUniversidade){
+int link_aluno_universidade(tpAluno *tpAluno, tpUniversidade *tpUniversidade){
     return 0;
 }
 

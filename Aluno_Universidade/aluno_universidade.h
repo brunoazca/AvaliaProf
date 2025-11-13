@@ -4,7 +4,7 @@
 #include "../Aluno/aluno.h"
 #include "../Universidade/universidade.h"
 
-int link(tpAluno *aluno, tpUniversidade *universidade);
+int link_aluno_universidade(tpAluno *aluno, tpUniversidade *universidade);
 int get_aluno_universidade(tpAluno **alunos, tpUniversidade *universidade);
 
 #endif
