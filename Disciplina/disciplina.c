@@ -1,11 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "disciplina.h"
 
-typedef struct tpDisciplina {
-    char *codigo;
-    char *nome;
-} tpDisciplina; 
+tpDisciplina *listaDisciplinas = NULL;
+int qtdDisciplinas = 0;
 
 // definir qtd disciplinas, listadisciplinas
 

@@ -1,14 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "professor.h"
 
-typedef struct tpProfessor {
-    char *cpf;
-    char *nome;
-    char *area_de_Atuacao;
-} tpProfessor; 
-
-int read_Professor(char *cpf, tpProfessor *tpProfessor) {
+int read_Professor(char *cpf, tpProfessor *professor) {
     return 0;
 }
 
@@ -16,10 +11,10 @@ int delete_Professor(char *cpf){
     return 0;
 }
 
-int create_Professor(tpProfessor *tpProfessor) {
+int create_Professor(tpProfessor *professor) {
     return 0;
 }
 
-int update_Professors(char *cpf, tpProfessor *tpProfessor) {
+int update_Professors(char *cpf, tpProfessor *professor) {
     return 0;
 }

@@ -1,25 +1,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "universidade.h"
 
-typedef struct tpUniversidade {
-    char *cnpj;
-    char *nome;
-    char *descrição;
-} tpUniversidade; 
-
-int read_Universidade(char *nome, tpUniversidade *tpUniversidade) {
+int read_Universidade(char *cnpj, tpUniversidade *universidade) {
     return 0;
 }
 
-int delete_Universidade(char *cpf){
+int delete_Universidade(char *cnpj){
     return 0;
 }
 
-int create_Universidade(tpUniversidade *tpUniversidade) {
+int create_Universidade(tpUniversidade *universidade) {
     return 0;
 }
 
-int get_Universidades(tpUniversidade **tpUniversidade) {
+int get_Universidades(tpUniversidade **universidades) {
     return 0;
 }
