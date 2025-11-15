@@ -11,8 +11,8 @@ typedef struct {
     char timestamp[50];
 } tpAvaliacao;
 
-int create_Avaliacao(tpAluno *aluno, tpProfessor *professor, tpAvaliacao *avaliacao);
-int get_Avaliacoes_Professor(tpProfessor *professor, tpAvaliacao **avaliacoes);
+int create_avaliacao(tpAluno *aluno, tpProfessor *professor, tpAvaliacao *avaliacao);
+int get_avaliacoes_professor(tpProfessor *professor, tpAvaliacao **avaliacoes, int *quantidade);
 
 #endif
 

@@ -235,7 +235,7 @@ static void menuAluno(bool *alunoLogado, tpAluno *alunoSessao) {
             char cpf[100];
             lerLinha("CPF do aluno a remover: ", cpf, sizeof(cpf));
 
-            int status = delete_Aluno(cpf);
+            int status = delete_aluno(cpf);
             switch (status) {
                 case 0:
                     printf("Aluno removido com sucesso!\n");
@@ -286,7 +286,7 @@ static void menuAluno(bool *alunoLogado, tpAluno *alunoSessao) {
             lerLinha("Timestamp: ", buffer, sizeof(buffer));
             snprintf(avaliacao.timestamp, sizeof(avaliacao.timestamp), "%s", buffer);
 
-            int status = create_Avaliacao(alunoSessao, &professor, &avaliacao);
+            int status = create_avaliacao(alunoSessao, &professor, &avaliacao);
             imprimirStatusGenerico("avaliar professor", status);
         } else {
             printf("Opção inválida, tente novamente.\n");
@@ -317,7 +317,7 @@ static void menuProfessor(void) {
             lerLinha("Área de atuação: ", buffer, sizeof(buffer));
             snprintf(professor.area_de_atuacao, sizeof(professor.area_de_atuacao), "%s", buffer);
 
-            int status = create_Professor(&professor);
+            int status = create_professor(&professor);
             imprimirStatusGenerico("criar professor", status);
         } else if (strcasecmp(opcao, "ler") == 0) {
             char cpf[100];
@@ -325,7 +325,7 @@ static void menuProfessor(void) {
             memset(&professor, 0, sizeof(tpProfessor));
 
             lerLinha("CPF do professor: ", cpf, sizeof(cpf));
-            int status = read_Professor(cpf, &professor);
+            int status = read_professor(cpf, &professor);
             if (status == 0) {
                 printf("Professor encontrado:\n");
                 printf("Nome: %s\n", professor.nome);
@@ -344,13 +344,13 @@ static void menuProfessor(void) {
             lerLinha("Novo nome: ", professor.nome, sizeof(professor.nome));
             lerLinha("Nova área de atuação: ", professor.area_de_atuacao, sizeof(professor.area_de_atuacao));
 
-            int status = update_Professors(cpf, &professor);
+            int status = update_professor(cpf, &professor);
             imprimirStatusGenerico("atualizar professor", status);
         } else if (strcasecmp(opcao, "deletar") == 0) {
             char cpf[100];
             lerLinha("CPF do professor a deletar: ", cpf, sizeof(cpf));
 
-            int status = delete_Professor(cpf);
+            int status = delete_professor(cpf);
             imprimirStatusGenerico("deletar professor", status);
         } else {
             printf("Opção inválida.\n");
@@ -381,7 +381,7 @@ static void menuUniversidade(void) {
             lerLinha("Descrição: ", buffer, sizeof(buffer));
             snprintf(universidade.descricao, sizeof(universidade.descricao), "%s", buffer);
 
-            int status = create_Universidade(&universidade);
+            int status = create_universidade(&universidade);
             imprimirStatusGenerico("criar universidade", status);
         } else if (strcasecmp(opcao, "ler") == 0) {
             char cnpj[100];
@@ -389,7 +389,7 @@ static void menuUniversidade(void) {
             memset(&universidade, 0, sizeof(tpUniversidade));
 
             lerLinha("CNPJ da universidade: ", cnpj, sizeof(cnpj));
-            int status = read_Universidade(cnpj, &universidade);
+            int status = read_universidade(cnpj, &universidade);
             if (status == 0) {
                 printf("Universidade encontrada:\n");
                 printf("Nome: %s\n", universidade.nome);
@@ -402,11 +402,19 @@ static void menuUniversidade(void) {
             char cnpj[100];
             lerLinha("CNPJ da universidade: ", cnpj, sizeof(cnpj));
 
-            int status = delete_Universidade(cnpj);
+            int status = delete_universidade(cnpj);
             imprimirStatusGenerico("deletar universidade", status);
         } else if (strcasecmp(opcao, "listar") == 0) {
             tpUniversidade *universidades = NULL;
-            int status = get_Universidades(&universidades);
+            int quantidade = 0;
+            int status = get_universidades(&universidades, &quantidade);
+            if (status == 0) {
+                printf("\nUniversidades cadastradas:\n");
+                for (int i = 0; i < quantidade; i++) {
+                    printf("[%d] %s (CNPJ: %s)\n", i + 1, universidades[i].nome, universidades[i].cnpj);
+                    printf("    Descrição: %s\n", universidades[i].descricao);
+                }
+            }
             imprimirStatusGenerico("listar universidades", status);
             free(universidades);
         } else {
@@ -433,7 +441,7 @@ static void menuDisciplina(void) {
             lerLinha("Código: ", disciplina.codigo, sizeof(disciplina.codigo));
             lerLinha("Nome: ", disciplina.nome, sizeof(disciplina.nome));
 
-            int status = create_Disciplina(&disciplina);
+            int status = create_disciplina(&disciplina);
             imprimirStatusGenerico("criar disciplina", status);
         } else if (strcasecmp(opcao, "ler") == 0) {
             char codigo[50];
@@ -441,7 +449,7 @@ static void menuDisciplina(void) {
             memset(&disciplina, 0, sizeof(tpDisciplina));
 
             lerLinha("Código da disciplina: ", codigo, sizeof(codigo));
-            int status = read_Disciplina(codigo, &disciplina);
+            int status = read_disciplina(codigo, &disciplina);
             if (status == 0) {
                 printf("Disciplina encontrada:\n");
                 printf("Código: %s\n", disciplina.codigo);
@@ -457,13 +465,13 @@ static void menuDisciplina(void) {
             lerLinha("Código da disciplina: ", codigo, sizeof(codigo));
             lerLinha("Novo nome: ", disciplina.nome, sizeof(disciplina.nome));
 
-            int status = update_Disciplinas(codigo, &disciplina);
+            int status = update_disciplina(codigo, &disciplina);
             imprimirStatusGenerico("atualizar disciplina", status);
         } else if (strcasecmp(opcao, "deletar") == 0) {
             char codigo[50];
             lerLinha("Código da disciplina: ", codigo, sizeof(codigo));
 
-            int status = delete_Disciplina(codigo);
+            int status = delete_disciplina(codigo);
             imprimirStatusGenerico("deletar disciplina", status);
         } else {
             printf("Opção inválida.\n");
@@ -485,10 +493,21 @@ static void menuAvaliacao(bool alunoLogado, tpAluno *alunoSessao) {
         } else if (strcasecmp(opcao, "listar") == 0) {
             tpProfessor professor;
             tpAvaliacao *avaliacoes = NULL;
+            int quantidade = 0;
             memset(&professor, 0, sizeof(tpProfessor));
 
             lerLinha("CPF do professor: ", professor.cpf, sizeof(professor.cpf));
-            int status = get_Avaliacoes_Professor(&professor, &avaliacoes);
+            int status = get_avaliacoes_professor(&professor, &avaliacoes, &quantidade);
+            if (status == 0) {
+                printf("\nAvaliações encontradas:\n");
+                for (int i = 0; i < quantidade; i++) {
+                    printf("[%d]\n", i + 1);
+                    printf("  ID: %s\n", avaliacoes[i].id);
+                    printf("  Nota: %s\n", avaliacoes[i].nota);
+                    printf("  Comentário: %s\n", avaliacoes[i].comentario);
+                    printf("  Timestamp: %s\n", avaliacoes[i].timestamp);
+                }
+            }
             imprimirStatusGenerico("listar avaliações", status);
             free(avaliacoes);
         } else if (strcasecmp(opcao, "criar") == 0) {
@@ -519,7 +538,7 @@ static void menuAvaliacao(bool alunoLogado, tpAluno *alunoSessao) {
             lerLinha("Timestamp: ", buffer, sizeof(buffer));
             snprintf(avaliacao.timestamp, sizeof(avaliacao.timestamp), "%s", buffer);
 
-            int status = create_Avaliacao(alunoSessao, &professor, &avaliacao);
+            int status = create_avaliacao(alunoSessao, &professor, &avaliacao);
             imprimirStatusGenerico("criar avaliação", status);
         } else {
             printf("Opção inválida.\n");
@@ -576,14 +595,20 @@ static void menuAlunoUniversidade(void) {
             int status = link_aluno_universidade(&aluno, &universidade);
             imprimirStatusGenerico("vincular aluno à universidade", status);
         } else if (strcasecmp(opcao, "consultar") == 0) {
+            tpAluno aluno;
             tpUniversidade universidade;
-            tpAluno *alunos = NULL;
+            memset(&aluno, 0, sizeof(tpAluno));
             memset(&universidade, 0, sizeof(tpUniversidade));
 
-            lerLinha("CNPJ da universidade: ", universidade.cnpj, sizeof(universidade.cnpj));
-            int status = get_aluno_universidade(&alunos, &universidade);
-            imprimirStatusGenerico("consultar alunos da universidade", status);
-            free(alunos);
+            lerLinha("CPF do aluno: ", aluno.cpf, sizeof(aluno.cpf));
+            int status = get_universidade_aluno(&aluno, &universidade);
+            if (status == 0) {
+                printf("\nUniversidade vinculada:\n");
+                printf("Nome: %s\n", universidade.nome);
+                printf("CNPJ: %s\n", universidade.cnpj);
+                printf("Descrição: %s\n", universidade.descricao);
+            }
+            imprimirStatusGenerico("consultar universidade do aluno", status);
         } else {
             printf("Opção inválida.\n");
         }
@@ -619,10 +644,18 @@ static void menuProfessorDisciplina(void) {
         } else if (strcasecmp(opcao, "consultar") == 0) {
             tpDisciplina disciplina;
             tpProfessor *professores = NULL;
+            int quantidade = 0;
             memset(&disciplina, 0, sizeof(tpDisciplina));
 
             lerLinha("Código da disciplina: ", disciplina.codigo, sizeof(disciplina.codigo));
-            int status = get_professor_disciplina(&disciplina, &professores);
+            int status = get_professores_disciplina(&disciplina, &professores, &quantidade);
+            if (status == 0) {
+                printf("\nProfessores vinculados:\n");
+                for (int i = 0; i < quantidade; i++) {
+                    printf("[%d] %s (CPF: %s)\n", i + 1, professores[i].nome, professores[i].cpf);
+                    printf("    Área: %s\n", professores[i].area_de_atuacao);
+                }
+            }
             imprimirStatusGenerico("consultar professores da disciplina", status);
             free(professores);
         } else {
@@ -659,10 +692,17 @@ static void menuDisciplinaUniversidade(void) {
         } else if (strcasecmp(opcao, "consultar") == 0) {
             tpUniversidade universidade;
             tpDisciplina *disciplinas = NULL;
+            int quantidade = 0;
             memset(&universidade, 0, sizeof(tpUniversidade));
 
             lerLinha("CNPJ da universidade: ", universidade.cnpj, sizeof(universidade.cnpj));
-            int status = get_Disciplina_universidade(&disciplinas, &universidade);
+            int status = get_disciplinas_universidade(&universidade, &disciplinas, &quantidade);
+            if (status == 0) {
+                printf("\nDisciplinas vinculadas:\n");
+                for (int i = 0; i < quantidade; i++) {
+                    printf("[%d] %s (%s)\n", i + 1, disciplinas[i].nome, disciplinas[i].codigo);
+                }
+            }
             imprimirStatusGenerico("consultar disciplinas da universidade", status);
             free(disciplinas);
         } else {

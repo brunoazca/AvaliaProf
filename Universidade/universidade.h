@@ -7,10 +7,10 @@ typedef struct {
     char descricao[255];
 } tpUniversidade;
 
-int read_Universidade(char *cnpj, tpUniversidade *universidade);
-int delete_Universidade(char *cnpj);
-int create_Universidade(tpUniversidade *universidade);
-int get_Universidades(tpUniversidade **universidades);
+int read_universidade(char *cnpj, tpUniversidade *universidade);
+int delete_universidade(char *cnpj);
+int create_universidade(tpUniversidade *universidade);
+int get_universidades(tpUniversidade **universidades, int *quantidade);
 
 #endif
 

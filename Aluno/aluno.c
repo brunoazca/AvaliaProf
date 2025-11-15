@@ -153,7 +153,7 @@ int read_aluno(char *cpf, tpAluno *aluno) {
 }
 
 
-int delete_Aluno(char *cpf) {
+int delete_aluno(char *cpf) {
     if(cpf == NULL || strlen(cpf) == 0) {
         return 2; // Parâmetro inválido -> caso de teste 7
     }

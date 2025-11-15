@@ -1,0 +1,261 @@
+﻿Programação Modular[a]
+Sistema de Avaliação de Professores
+
+
+Integrantes do grupo:
+* Bruno Azambuja
+* Bruno Cardeman
+* Ian Siqueira
+* Lucas Goes
+Introdução
+
+
+O Sistema de Avaliação de Professores é uma aplicação modular destinada a permitir que alunos registrem avaliações (nota e comentário) sobre professores para cada disciplina lecionada em sua universidade. O sistema centraliza informações de alunos, universidades, disciplinas, professores e avaliações, oferecendo operações de CRUD (Criar, Ler, Atualizar, Excluir) e mecanismos de associação entre entidades (ex.: vincular aluno à universidade, professor à disciplina).
+Entidades
+* Principal
+* Universidade
+* Aluno
+* Professor
+* Disciplina
+* Avaliação
+* Aluno/Universidade
+* Disciplina/Universidade
+* Professor/Disciplina
+
+
+Operações (geral)
+* Gerenciar Alunos: (Criar, Ler, Atualizar, Excluir, Registrar, Logar)
+* Gerenciar Universidades: (Criar, Ler, Atualizar, Excluir, Obter todas)
+* Gerenciar Disciplinas: (Criar, Ler, Atualizar, Excluir)
+* Gerenciar Professores: (Criar, Ler, Atualizar, Excluir)
+* Associar Disciplina a Universidade: (Linkar, Obter disciplinas de uma universidade)
+* Associar Aluno a Universidade: (Linkar, Obter universidade de um aluno)
+* Associar Professor a Disciplina: (Linkar, Obter professores de uma disciplina)
+* Avaliar Professor: (Criar avaliação por aluno para professor com nota e comentário, Obter avaliações de um professor)
+
+
+Arquitetura de módulos 
+https://lucid.app/lucidchart/1528db0a-725d-4f20-8416-1155fe6f050b/edit?invitationId=inv_953c2acf-b6d5-4a4f-9252-e5e64c8d14bf&page=0_0#
+  Funções do Modelo de Sistema Universitário
+Módulo: Aluno
+Campos (tpAluno):
+* CPF
+* Nome
+* Email
+* Senha
+* Curso
+* Universidade
+Requisitos funcionais: 
+Essa estrutura vai guardar a lista com todos os alunos da universidade. O aluno poderá criar uma conta ou fazer login. Os dados necessários para a criação são um cpf, e-mail, nome, a sua faculdade e curso (que não serão verificados pelo sistema), e senha. Para o login, basta o e-mail e a senha. Tendo uma conta, o aluno também terá a possibilidade de deletar a sua conta.
+Funções:
+* read_aluno(cpf, tpAluno*)
+   * 0: ok (Aluno encontrado) -> caso de teste 1
+   * 1: Aluno não encontrado -> caso de teste 2
+   * 2: Parâmetro inválido -> caso de teste 3
+   * 99: Cancelamento por exceção -> caso de teste 4
+   * Requisitos funcionais: A leitura do aluno será feita buscando se o cpf está contido na lista interna de alunos e preencherá o ponteiro tpAluno caso seja encontrado. Os casos de retorno estão especificados acima. 
+* delete_aluno(cpf)
+   * 0: ok -> caso de teste 5 
+   * 1: Falha ao deletar aluno -> caso de teste 6
+   * 2: Parâmetro inválido -> caso de teste 7
+   * 99: Cancelamento por exceção -> caso de teste 8
+   * Requisitos funcionais: O aluno com cpf recebido pela função será removido da lista interna, se lá estiver. Caso não esteja, o erro será 1.  
+* register(tpAluno)
+   * 0: ok -> caso de teste 9
+   * 1: Falha ao registrar -> caso de teste 10
+   * 2: Parâmetro inválido -> caso de teste 11
+   * 99: Cancelamento por exceção -> caso de teste 12
+   * Requisitos funcionais: A criação do aluno será feita incorporando o tpAluno recebido na lista interna. Caso já exista um aluno com o mesmo cpf na lista, o retorno será 1.
+* login(email, senha)
+   * 0: ok -> caso de teste 13
+   * 1: Falha no login (Credenciais inválidas) -> caso de teste 14
+   * 2: Parâmetro inválido -> caso de teste 15
+   * 99: Cancelamento por exceção -> caso de teste 16
+   * Requisitos funcionais: O login será permitido caso o aluno com o email dado esteja na lista e a senha seja igual à que foi recebida como parâmetro.
+
+
+Módulo: Universidade
+Campos (tpUniversidade):
+* CNPJ
+* Nome
+* Descrição
+Requisitos funcionais:
+Essa estrutura vai guardar a lista de todas as universidades do projeto. O CNPJ da universidade deve se conformar ao padrão do país: AA. AAA. AAA/AAAA-DV (CNPJ).
+Funções:
+* read_universidade(nome, tpUniversidade*)
+   * 0: ok (Universidade encontrada) -> caso de teste 17
+   * 1: Universidade não encontrada -> caso de teste 18
+   * 2: Parâmetro inválido -> caso de teste 19
+   * 99: Cancelamento por exceção -> caso de teste 20
+   * Requisitos funcionais: A leitura da universidade será feita buscando se o nome está contido na lista interna de universidades e preencherá o ponteiro tpUniversidade caso seja encontrado.
+* create_universidade(tpUniversidade)
+   * 0: ok -> caso de teste 21
+   * 1: Falha ao criar universidade -> caso de teste 22
+   * 2: Parâmetro inválido -> caso de teste 23
+   * 99: Cancelamento por exceção -> caso de teste 24
+   * Requisitos funcionais: A criação da universidade será feita incorporando o tpUniversidade recebido na lista interna. Caso já exista uma universidade com o mesmo CNPJ na lista, o retorno será 1.
+* delete_universidade(cnpj)
+   * 0: ok -> caso de teste 25
+   * 1: Falha ao deletar universidade -> caso de teste 26
+   * 2: Parâmetro inválido -> caso de teste 27
+   * 99: Cancelamento por exceção -> caso de teste 28
+   * Requisitos funcionais: A universidade com o CNPJ recebido será removida da lista interna. Caso o CNPJ não corresponda a nenhuma universidade, o erro será 1.
+* get_universidades(tpUniversidade**)
+   * 0: ok (Lista de universidades retornada) -> caso de teste 29
+   * 99: Cancelamento por exceção -> caso de teste 30
+   * Requisitos funcionais:  Essa função busca todas as universidades da lista interna de universidades e preenche um ponteiro tpUniversidade** com essa lista (que também é um ponteiro).A função deverá retornar a lista de todas as universidades cadastradas no sistema, armazenando-as na estrutura apontada pelo parâmetro tpUniversidade**.
+   * Caso nenhuma universidade esteja cadastrada, o sistema retornará o código 1.
+Módulo: Disciplina
+Campos (tpDisciplina):
+* Código
+* Nome
+Requisitos funcionais:
+O módulo Disciplina é responsável pelo gerenciamento das disciplinas no sistema, oferecendo funcionalidades de consulta, criação, atualização e exclusão de registros, guardando uma lista de todas as disciplinas. Todas as operações realizam primeiramente a validação dos parâmetros recebidos e retornam códigos padronizados para indicar sucesso, falha, parâmetro inválido ou cancelamento por exceção.
+Funções:
+* read_disciplina(Código, tpDisciplina*)
+   * 0: ok (Disciplina encontrada) -> caso de teste 31
+   * 1: Disciplina não encontrada. -> caso de teste 32
+   * 2: Parâmetro inválido (validação do id antes da consulta). -> caso de teste 33
+   * 99: Cancelamento por exceção -> caso de teste 34
+   * Requisitos funcionais: A leitura da disciplina será feita buscando se o id está contido na lista interna de disciplinas e preencherá o ponteiro tpDisciplina, caso a consulta seja bem-sucedida.
+* create_disciplina(tpDisciplina)
+   * 0: ok (Disciplina criada) -> caso de teste 35
+   * 1: Falha ao criar disciplina (erro de gravação ou conflito de dados). -> caso de teste 36
+   * 2: Parâmetro inválido (dados incompletos ou inválidos). -> caso de teste 37
+   * 99: Cancelamento por exceção -> caso de teste 38
+   * Requisitos funcionais: Recebe a estrutura tpDisciplina contendo os dados da disciplina e realiza a validação de todos os campos obrigatórios antes de inserir o registro.
+* update_disciplina(Código, tpDisciplina)
+   * 0: ok (Disciplina atualizada) -> caso de teste 39
+   * 1: Falha ao atualizar disciplina (erro na base ou disciplina não encontrada). -> caso de teste 40
+   * 2: Parâmetro inválido (id ou dados da estrutura inválidos). -> caso de teste 41
+   * 99: Cancelamento por exceção -> caso de teste 42
+   * Requisitos funcionais:  Recebe uma disciplina com um identificador da disciplina e a estrutura tpDisciplina com as novas informações, validando os parâmetros antes de realizar a alteração.
+* delete_disciplina(Código)
+   * 0: ok (Disciplina deletada) -> caso de teste 43
+   * 1: Falha ao deletar disciplina (erro na base ou disciplina não encontrada). -> caso de teste 44
+   * 2: Parâmetro inválido (id inválido). -> caso de teste 45
+   * 99: Cancelamento por exceção -> caso de teste 46
+   * Requisitos funcionais:  A disciplina com o id recebido será removida da lista interna. Caso o id não corresponda a nenhuma disciplina, o erro será 1.
+Módulo: Professor
+Campos:
+* CPF
+* Nome
+* Área de Atuação
+Requisitos funcionais:
+
+
+Este módulo é responsável pelo gerenciamento de professores no sistema, oferecendo funcionalidades de consulta, criação, atualização e exclusão de registros, contendo a lista com todos os professores. Todas as operações seguem uma validação inicial dos parâmetros e retornam códigos padronizados para indicar sucesso, falha, parâmetros inválidos ou cancelamento por exceção.
+Funções:
+* read_professor(CPF, tpProfessor*)
+   * 0: Sucesso – professor encontrado. -> caso de teste 47
+   * 1: Professor não encontrado. -> caso de teste 48
+   * 2: Parâmetro inválido (verificação do id antes da busca). -> caso de teste 49
+   * 99: Cancelamento por exceção -> caso de teste 50
+   * Requisitos funcionais: Recebe como parâmetros o identificador único do professor e um ponteiro para a estrutura tpProfessor, onde os dados serão armazenados caso a busca seja bem-sucedida.
+* create_professor(tpProfessor)
+   * 0: Sucesso (Professor criado) -> caso de teste 51
+   * 1: Falha ao criar professor (erro na base de dados ou conflito de dados). -> caso de teste 52
+   * 2: Parâmetro inválido (dados da estrutura incorretos ou incompletos). -> caso de teste 53
+   * 99: Cancelamento por exceção -> caso de teste 54
+   * Requisitos funcionais: Uma estrutura tpProfessor com os dados do professor a serem inseridos e valida se todos os parâmetros obrigatórios estão corretos.
+* update_professor(CPF, tpProfessor)
+   * 0: Sucesso (Professor atualizado) -> caso de teste 55
+   * 1: Falha ao atualizar professor (erro na base ou professor não encontrado). -> caso de teste 56
+   * 2: Parâmetro inválido (id ou dados da estrutura inválidos). -> caso de teste 57
+   * 99: Cancelamento por exceção -> caso de teste 58
+   * Requisitos funcionais: Recebe o id do professor e uma estrutura tpProfessor com as novas informações, validando todos os parâmetros antes da atualização.
+* delete_professor(CPF)
+   * 0: ok (Professor deletado) -> caso de teste 59
+   * 1: Falha ao deletar professor (erro na base ou professor não encontrado). -> caso de teste 60 
+   * 2: Parâmetro inválido (id inválido). -> caso de teste 61
+   * 99: Cancelamento por exceção -> caso de teste 62
+   * Requisitos funcionais:  Recebe o identificador único do professor e valida o parâmetro antes de realizar a exclusão.
+
+Módulo: Avaliação
+Campos (tpAvaliacao):
+   * Id
+   * Nota
+   * Comentário
+   * Timestamp
+Requisitos funcionais:
+Um aluno logado vai ter a opção de avaliar um professor (em uma escala de 1 a 5 estrelas), para cada disciplina lecionada pelo professor. Essa estrutura vai guardar a lista com todas as avaliações do sistema, sempre associadas ao tpProfessor e tpAluno da avaliação.
+
+
+Funções:
+   * create_avaliacao(tpAluno, tpProfessor, tpAvaliacao)
+   * 0: ok -> caso de teste 63
+   * 1: Falha ao criar avaliação -> caso de teste 64
+   * 2: Parâmetro inválido -> caso de teste 65
+   * 99: Cancelamento por exceção -> caso de teste 66
+   * Requisitos funcionais: Recebe três estruturas: tpAluno e tpProfessor, que contém os dados do aluno que está avaliando e do professor que está sendo avaliado. A estrutura tpAvaliacao vai conter os campos que o aluno preencher(nota e comentário), um id e o tempo da avaliação.
+   * get_avaliacoes_professor(tpProfessor, tpAvaliacao**)
+   * 0: ok (Lista de avaliações retornada) -> caso de teste 67
+   * 1: Nenhuma avaliação encontrada para o professor -> caso de teste 68
+   * 2: Parâmetro inválido -> caso de teste 69
+   * 99: Cancelamento por exceção -> caso de teste 70
+   * Requisitos funcionais: Com a estrutura do professor recebida, será consultado todas as avaliações que esse professor recebeu, e essas avaliações serão colocadas na lista tpAvalicao**.
+Módulo: Aluno / Universidade (Entidade de Ligação)
+Requisitos funcionais: 
+Cada aluno vai poder ser associado a uma única universidade de cada vez, só podendo avaliar as aulas de professores que dão essa aula na sua universidade. Essa estrutura vai conter um dicionário com todas as relações aluno / universidade.
+Funções:
+   * link_aluno_universidade(tpAluno, tpUniversidade)
+   * 0: ok -> caso de teste 71
+   * 1: Falha ao vincular aluno à universidade -> caso de teste 72
+   * 2: Parâmetro inválido -> caso de teste 73
+   * 99: Cancelamento por exceção -> caso de teste 74
+   * Requisitos funcionais:A função deve validar os parâmetros recebidos, verificar se o aluno e a universidade existem, e registrar o vínculo entre eles no dicionário de relações.
+
+
+   * get_universidade_aluno(tpAluno, tpUniversidade*)
+   * 0: ok (Universidade do aluno retornada) -> caso de teste 75
+   * 1: Universidade não encontrada para o aluno -> caso de teste 76
+   * 2: Parâmetro inválido -> caso de teste 77
+   * 99: Cancelamento por exceção -> caso de teste 78
+   * Requisitos funcionais: A função deve validar o aluno informado, buscar no dicionário a universidade associada e retorná-la se o vínculo existir.
+
+
+Módulo: Disciplina / Universidade (Entidade de Ligação)
+Requisitos funcionais:
+O módulo deve garantir que cada disciplina esteja associada a uma universidade. Para isso, essa estrutura vai conter um dicionário com todas as relações disciplina / universidade.
+Também deve validar os identificadores da disciplina e da universidade fornecidos, verificar a existência de ambos nas bases de dados do sistema e permitir a associação entre disciplina e universidade. Além disso, deve assegurar que cada disciplina tenha apenas uma universidade vinculada, mantendo a integridade das associações registradas no sistema
+Funções:
+   * link(tpUniversidade, tpDisciplina)
+   * 0: ok -> caso de teste 79
+   * 1: Falha ao vincular disciplina à universidade -> caso de teste 80
+   * 2: Parâmetro inválido -> caso de teste 81
+   * 99: Cancelamento por exceção -> caso de teste 82
+   * Requisitos funcionais: A função é responsável por receber os identificadores da universidade e da disciplina, verificar sua existência e criar o vínculo entre eles. Caso os parâmetros sejam inválidos ou ocorra falha na operação, retorna o código correspondente.
+
+      * get_disciplinas_universidade(tpUniversidade, tpDisciplina**):
+      * 0: ok (Lista de disciplinas retornada) -> caso de teste 83
+      * 1: Nenhuma disciplina encontrada para a universidade -> caso de teste 84
+      * 2: Parâmetro inválido -> caso de teste 85
+      * 99: Cancelamento por exceção -> caso de teste 86
+      * Requisitos funcionais: A função deve validar o identificador da universidade, confirmar sua existência e buscar todas as disciplinas associadas a ela no dicionário de relações. 
+
+
+Módulo: Professor / Disciplina (Entidade de Ligação)
+Requisitos funcionais: 
+O módulo deve garantir que cada disciplina esteja associada a pelo menos um professor que a leciona. Para isso, ele esse módulo vai conter um dicionário com todas as relações professor / disciplina. Além disso, deve validar os identificadores de professor e disciplina fornecidos, verificar a existência de ambos nas bases de dados do sistema e permitir a associação de professores às disciplinas. Além disso, deve assegurar que nenhuma disciplina fique sem professor responsável, mantendo a integridade das associações registradas no sistema.
+
+
+Funções:
+      * link_professor_disciplina(tpProfessor, tpDisciplina):
+      * 0: ok -> caso de teste 87
+      * 1: Falha ao vincular professor à disciplina -> caso de teste 88
+      * 2: Parâmetro inválido -> caso de teste 89
+      * 99: Cancelamento por exceção -> caso de teste 90
+      * Requisitos funcionais:A função é responsável por receber os identificadores do professor e da disciplina, verificar sua existência e criar o vínculo entre eles. Caso os parâmetros sejam inválidos ou ocorra falha na operação, retorna o código correspondente.
+
+
+      * get_professores_disciplina(tpDisciplina, tpProfessor**):
+      * 0: ok (Lista de professores retornada) -> caso de teste 91
+      * 1: Nenhum professor encontrado para a disciplina -> caso de teste 92
+      * 2: Parâmetro inválido -> caso de teste 93
+      * 99: Cancelamento por exceção -> caso de teste 94
+      * Requisitos funcionais:A função deve validar o identificador da disciplina, confirmar sua existência e buscar todos os professores associados a ela no dicionário de relações.
+
+
+[a]introducao
+requisitos
+modelos

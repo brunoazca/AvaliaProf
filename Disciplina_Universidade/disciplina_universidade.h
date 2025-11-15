@@ -5,7 +5,7 @@
 #include "../Universidade/universidade.h"
 
 int link_disciplina_universidade(tpDisciplina *disciplina, tpUniversidade *universidade);
-int get_Disciplina_universidade(tpDisciplina **disciplinas, tpUniversidade *universidade);
+int get_disciplinas_universidade(tpUniversidade *universidade, tpDisciplina **disciplinas, int *quantidade);
 
 #endif
 

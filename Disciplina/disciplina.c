@@ -8,7 +8,7 @@ int qtdDisciplinas = 0;
 
 static void listarDisciplinas(void);
 
-int read_Disciplina(char *codigo, tpDisciplina *disciplina) {
+int read_disciplina(char *codigo, tpDisciplina *disciplina) {
     if (codigo == NULL || disciplina == NULL || strlen(codigo) == 0) {
         return 2;
     }
@@ -23,7 +23,7 @@ int read_Disciplina(char *codigo, tpDisciplina *disciplina) {
     return 1;
 }
 
-int delete_Disciplina(char *codigo) {
+int delete_disciplina(char *codigo) {
     if (codigo == NULL || strlen(codigo) == 0) {
         return 2;
     }
@@ -53,7 +53,7 @@ int delete_Disciplina(char *codigo) {
     return 1;
 }
 
-int create_Disciplina(tpDisciplina *disciplina) {
+int create_disciplina(tpDisciplina *disciplina) {
     if (disciplina == NULL || strlen(disciplina->codigo) == 0 || strlen(disciplina->nome) == 0) {
         return 2;
     }
@@ -77,7 +77,7 @@ int create_Disciplina(tpDisciplina *disciplina) {
     return 0;
 }
 
-int update_Disciplinas(char *codigo, tpDisciplina *disciplina) {
+int update_disciplina(char *codigo, tpDisciplina *disciplina) {
     if (codigo == NULL || disciplina == NULL || strlen(codigo) == 0) {
         return 2;
     }

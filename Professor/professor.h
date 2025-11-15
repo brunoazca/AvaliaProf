@@ -20,10 +20,10 @@ extern tpProfessor *listaProfessores;
 extern int qtdProfessores;
 
 
-int read_Professor(char *cpf, tpProfessor *professor);
-int delete_Professor(char *cpf);
-int create_Professor(tpProfessor *professor);
-int update_Professors(char *cpf, tpProfessor *professor);
+int read_professor(char *cpf, tpProfessor *professor);
+int delete_professor(char *cpf);
+int create_professor(tpProfessor *professor);
+int update_professor(char *cpf, tpProfessor *professor);
 
 #endif
 

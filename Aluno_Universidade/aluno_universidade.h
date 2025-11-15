@@ -5,7 +5,7 @@
 #include "../Universidade/universidade.h"
 
 int link_aluno_universidade(tpAluno *aluno, tpUniversidade *universidade);
-int get_aluno_universidade(tpAluno **alunos, tpUniversidade *universidade);
+int get_universidade_aluno(tpAluno *aluno, tpUniversidade *universidade);
 
 #endif
 

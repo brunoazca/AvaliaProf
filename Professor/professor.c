@@ -21,7 +21,7 @@ void listarProfessores() {
 }
 
 
-int read_Professor(char *cpf, tpProfessor *professor) {
+int read_professor(char *cpf, tpProfessor *professor) {
     if (cpf == NULL || professor == NULL || strlen(cpf) == 0) {
         return 2;
     }
@@ -36,7 +36,7 @@ int read_Professor(char *cpf, tpProfessor *professor) {
     return 1;
 }
 
-int delete_Professor(char *cpf){
+int delete_professor(char *cpf){
     if (cpf == NULL || strlen(cpf) == 0) {
         return 2;
     }
@@ -52,7 +52,7 @@ int delete_Professor(char *cpf){
             }
             qtdProfessores--;
 
-            tpProfessor *tmp = realloc(listaProfessores, qtdProfessores * sizeof(tpProfessores));
+            tpProfessor *tmp = realloc(listaProfessores, qtdProfessores * sizeof(tpProfessor));
             if (tmp != NULL || qtdProfessores == 0) {
                 listaProfessores = tmp;
             } else {
@@ -66,7 +66,7 @@ int delete_Professor(char *cpf){
     return 1;
 }
 
-int create_Professor(tpProfessor *professor) {
+int create_professor(tpProfessor *professor) {
     if (professor == NULL || strlen(professor->cpf) == 0 || strlen(professor->nome) == 0) {
         return 2;
     }
@@ -91,7 +91,7 @@ int create_Professor(tpProfessor *professor) {
 }
 
 
-int update_Professors(char *cpf, tpProfessor *professor) {
+int update_professor(char *cpf, tpProfessor *professor) {
     if (cpf == NULL || professor == NULL || strlen(cpf) == 0) {
         return 2;
     }
@@ -100,6 +100,9 @@ int update_Professors(char *cpf, tpProfessor *professor) {
         if (strcmp(listaProfessores[i].cpf, cpf) == 0) {
             if (strlen(professor->nome) > 0) {
                 snprintf(listaProfessores[i].nome, sizeof(listaProfessores[i].nome), "%s", professor->nome);
+            }
+            if (strlen(professor->area_de_atuacao) > 0) {
+                snprintf(listaProfessores[i].area_de_atuacao, sizeof(listaProfessores[i].area_de_atuacao), "%s", professor->area_de_atuacao);
             }
             return 0;
         }

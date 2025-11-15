@@ -24,7 +24,7 @@ extern int qtdAlunos;
 
 // só declara as funções (não implementa aqui)
 int read_aluno(char *cpf, tpAluno *aluno);
-int delete_Aluno(char *cpf);
+int delete_aluno(char *cpf);
 int registrar(tpAluno *aluno);
 int login(char *email, char *senha);
 void salvarJSON();

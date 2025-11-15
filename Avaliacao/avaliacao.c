@@ -3,10 +3,108 @@
 #include <string.h>
 #include "avaliacao.h"
 
-int create_Avaliacao(tpAluno *tpAluno ,tpProfessor *tpProfessor,tpAvaliacao *tpAvaliacao) {
+typedef struct {
+    tpAvaliacao avaliacao;
+    tpAluno aluno;
+    tpProfessor professor;
+} tpAvaliacaoRegistro;
+
+static tpAvaliacaoRegistro *listaAvaliacoes = NULL;
+static int qtdAvaliacoes = 0;
+
+static int validarCampos(tpAluno *aluno, tpProfessor *professor, tpAvaliacao *avaliacao);
+
+int create_avaliacao(tpAluno *aluno, tpProfessor *professor, tpAvaliacao *avaliacao) {
+    if (!validarCampos(aluno, professor, avaliacao)) {
+        return 2;
+    }
+
+    tpAluno alunoEncontrado;
+    tpProfessor professorEncontrado;
+
+    if (read_aluno(aluno->cpf, &alunoEncontrado) != 0) {
+        return 1;
+    }
+
+    if (read_professor(professor->cpf, &professorEncontrado) != 0) {
+        return 1;
+    }
+
+    for (int i = 0; i < qtdAvaliacoes; i++) {
+        if (strcmp(listaAvaliacoes[i].avaliacao.id, avaliacao->id) == 0) {
+            return 1;
+        }
+    }
+
+    tpAvaliacaoRegistro *novaLista = realloc(listaAvaliacoes, (qtdAvaliacoes + 1) * sizeof(tpAvaliacaoRegistro));
+    if (novaLista == NULL) {
+        return 99;
+    }
+
+    listaAvaliacoes = novaLista;
+    listaAvaliacoes[qtdAvaliacoes].avaliacao = *avaliacao;
+    listaAvaliacoes[qtdAvaliacoes].aluno = alunoEncontrado;
+    listaAvaliacoes[qtdAvaliacoes].professor = professorEncontrado;
+    qtdAvaliacoes++;
+
     return 0;
 }
 
-int get_Avaliacoes_Professor(tpProfessor *tpProfessor,tpAvaliacao **tpAvaliacao) {
+int get_avaliacoes_professor(tpProfessor *professor, tpAvaliacao **avaliacoes, int *quantidade) {
+    if (professor == NULL || avaliacoes == NULL || quantidade == NULL || strlen(professor->cpf) == 0) {
+        return 2;
+    }
+
+    int total = 0;
+    for (int i = 0; i < qtdAvaliacoes; i++) {
+        if (strcmp(listaAvaliacoes[i].professor.cpf, professor->cpf) == 0) {
+            total++;
+        }
+    }
+
+    if (total == 0) {
+        *avaliacoes = NULL;
+        *quantidade = 0;
+        return 1;
+    }
+
+    tpAvaliacao *lista = malloc(total * sizeof(tpAvaliacao));
+    if (lista == NULL) {
+        return 99;
+    }
+
+    int indice = 0;
+    for (int i = 0; i < qtdAvaliacoes; i++) {
+        if (strcmp(listaAvaliacoes[i].professor.cpf, professor->cpf) == 0) {
+            lista[indice++] = listaAvaliacoes[i].avaliacao;
+        }
+    }
+
+    *avaliacoes = lista;
+    *quantidade = total;
     return 0;
+}
+
+static int validarCampos(tpAluno *aluno, tpProfessor *professor, tpAvaliacao *avaliacao) {
+    if (aluno == NULL || professor == NULL || avaliacao == NULL) {
+        return 0;
+    }
+
+    if (strlen(aluno->cpf) == 0 || strlen(professor->cpf) == 0) {
+        return 0;
+    }
+
+    if (strlen(avaliacao->id) == 0 ||
+        strlen(avaliacao->nota) == 0 ||
+        strlen(avaliacao->comentario) == 0 ||
+        strlen(avaliacao->timestamp) == 0) {
+        return 0;
+    }
+
+    int nota = atoi(avaliacao->nota);
+    if (nota < 1 || nota > 5) {
+        return 0;
+    }
+
+    return 1;
 }
