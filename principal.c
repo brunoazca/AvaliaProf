@@ -13,6 +13,7 @@
 #include "Aluno_Universidade/aluno_universidade.h"
 #include "Professor_Disciplina/professor_disciplina.h"
 #include "Disciplina_Universidade/disciplina_universidade.h"
+#include "tests/test_runner.h"
 
 static void lerLinha(const char *mensagem, char *dest, size_t tamanho);
 static void imprimirStatusGenerico(const char *acao, int status);
@@ -47,6 +48,7 @@ int main(void) {
         printf("4 - Disciplina\n");
         printf("5 - Avaliação\n");
         printf("6 - Relacionamentos\n");
+        printf("7 - Testes automatizados\n");
         printf("0 - Sair\n");
         if (alunoLogado) {
             printf("\nAluno logado: %s\n", alunoSessao.nome[0] ? alunoSessao.nome : alunoSessao.email);
@@ -67,6 +69,9 @@ int main(void) {
             menuAvaliacao(alunoLogado, &alunoSessao);
         } else if (strcmp(escolha, "6") == 0 || strcasecmp(escolha, "relacionamentos") == 0) {
             menuRelacionamentos();
+        } else if (strcmp(escolha, "7") == 0 || strcasecmp(escolha, "testes") == 0) {
+            printf("\nExecutando suíte completa de testes...\n");
+            run_all_tests();
         } else {
             printf("Opção inválida, tente novamente.\n");
         }

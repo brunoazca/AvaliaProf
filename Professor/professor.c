@@ -3,6 +3,21 @@
 tpProfessor *listaProfessores = NULL;
 int qtdProfessores = 0;
 
+static int professor_forced_return = 0;
+
+static int professor_consume_forced_return(void) {
+    if (professor_forced_return != 0) {
+        int value = professor_forced_return;
+        professor_forced_return = 0;
+        return value;
+    }
+    return 0;
+}
+
+void professor_set_forced_return(int valor) {
+    professor_forced_return = valor;
+}
+
 void listarProfessores() {
     if(qtdProfessores == 0){
         printf("\nNenhum professor cadastrado ainda.\n\n");
@@ -22,6 +37,10 @@ void listarProfessores() {
 
 
 int read_professor(char *cpf, tpProfessor *professor) {
+    int forced = professor_consume_forced_return();
+    if (forced != 0) {
+        return forced;
+    }
     if (cpf == NULL || professor == NULL || strlen(cpf) == 0) {
         return 2;
     }
@@ -37,6 +56,10 @@ int read_professor(char *cpf, tpProfessor *professor) {
 }
 
 int delete_professor(char *cpf){
+    int forced = professor_consume_forced_return();
+    if (forced != 0) {
+        return forced;
+    }
     if (cpf == NULL || strlen(cpf) == 0) {
         return 2;
     }
@@ -67,6 +90,10 @@ int delete_professor(char *cpf){
 }
 
 int create_professor(tpProfessor *professor) {
+    int forced = professor_consume_forced_return();
+    if (forced != 0) {
+        return forced;
+    }
     if (professor == NULL || strlen(professor->cpf) == 0 || strlen(professor->nome) == 0) {
         return 2;
     }
@@ -92,6 +119,10 @@ int create_professor(tpProfessor *professor) {
 
 
 int update_professor(char *cpf, tpProfessor *professor) {
+    int forced = professor_consume_forced_return();
+    if (forced != 0) {
+        return forced;
+    }
     if (cpf == NULL || professor == NULL || strlen(cpf) == 0) {
         return 2;
     }
@@ -109,4 +140,26 @@ int update_professor(char *cpf, tpProfessor *professor) {
     }
 
     return 1;
+}
+
+void professor_detach_state(tpProfessor **lista, int *quantidade) {
+    if (lista == NULL || quantidade == NULL) {
+        return;
+    }
+    *lista = listaProfessores;
+    *quantidade = qtdProfessores;
+    listaProfessores = NULL;
+    qtdProfessores = 0;
+}
+
+void professor_attach_state(tpProfessor *lista, int quantidade) {
+    if (listaProfessores != NULL) {
+        free(listaProfessores);
+    }
+    listaProfessores = lista;
+    qtdProfessores = quantidade;
+}
+
+void professor_free_state(tpProfessor *lista) {
+    free(lista);
 }

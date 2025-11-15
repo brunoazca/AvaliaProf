@@ -5,6 +5,21 @@ int qtdAlunos = 0;
 
 tpAluno tipoAluno; // caso queira usar diretamente em main
 
+static int aluno_forced_return = 0;
+
+static int aluno_consume_forced_return(void) {
+    if (aluno_forced_return != 0) {
+        int value = aluno_forced_return;
+        aluno_forced_return = 0;
+        return value;
+    }
+    return 0;
+}
+
+void aluno_set_forced_return(int valor) {
+    aluno_forced_return = valor;
+}
+
 void listarAlunos() {
     if(qtdAlunos == 0){
         printf("\nNenhum aluno cadastrado ainda.\n\n");
@@ -65,6 +80,10 @@ void carregarAlunos() {
 }
 
 int registrar(tpAluno *aluno) {
+    int forced = aluno_consume_forced_return();
+    if (forced != 0) {
+        return forced;
+    }
     // Caso 2: parâmetro inválido
     if(aluno == NULL || strlen(aluno->cpf) == 0 || strlen(aluno->nome) == 0){
         return 2;
@@ -136,6 +155,10 @@ void salvarJSON() {
 
 // apenas para evitar warnings
 int read_aluno(char *cpf, tpAluno *aluno) {
+    int forced = aluno_consume_forced_return();
+    if (forced != 0) {
+        return forced;
+    }
     // Verifica parâmetros inválidos
     if(cpf == NULL || aluno == NULL || strlen(cpf) == 0) {
         return 2; // Parâmetro inválido -> caso de teste 3
@@ -154,6 +177,10 @@ int read_aluno(char *cpf, tpAluno *aluno) {
 
 
 int delete_aluno(char *cpf) {
+    int forced = aluno_consume_forced_return();
+    if (forced != 0) {
+        return forced;
+    }
     if(cpf == NULL || strlen(cpf) == 0) {
         return 2; // Parâmetro inválido -> caso de teste 7
     }
@@ -186,6 +213,10 @@ int delete_aluno(char *cpf) {
 }
 
 int login(char *email, char *senha) {
+    int forced = aluno_consume_forced_return();
+    if (forced != 0) {
+        return forced;
+    }
     if(email == NULL || senha == NULL || strlen(email) == 0 || strlen(senha) == 0) {
         return 2; // Parâmetro inválido -> caso de teste 15
     }
@@ -204,3 +235,24 @@ int login(char *email, char *senha) {
     return 1; // Falha no login (email não encontrado) -> caso de teste 14
 }
 
+void aluno_detach_state(tpAluno **lista, int *quantidade) {
+    if (lista == NULL || quantidade == NULL) {
+        return;
+    }
+    *lista = listaAlunos;
+    *quantidade = qtdAlunos;
+    listaAlunos = NULL;
+    qtdAlunos = 0;
+}
+
+void aluno_attach_state(tpAluno *lista, int quantidade) {
+    if (listaAlunos != NULL) {
+        free(listaAlunos);
+    }
+    listaAlunos = lista;
+    qtdAlunos = quantidade;
+}
+
+void aluno_free_state(tpAluno *lista) {
+    free(lista);
+}

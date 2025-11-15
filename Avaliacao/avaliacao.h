@@ -14,5 +14,10 @@ typedef struct {
 int create_avaliacao(tpAluno *aluno, tpProfessor *professor, tpAvaliacao *avaliacao);
 int get_avaliacoes_professor(tpProfessor *professor, tpAvaliacao **avaliacoes, int *quantidade);
 
+void avaliacao_detach_state(void **estado, int *quantidade);
+void avaliacao_attach_state(void *estado, int quantidade);
+void avaliacao_free_state(void *estado);
+void avaliacao_set_forced_return(int valor);
+
 #endif
 

@@ -7,8 +7,26 @@ tpDisciplina *listaDisciplinas = NULL;
 int qtdDisciplinas = 0;
 
 static void listarDisciplinas(void);
+static int disciplina_forced_return = 0;
+
+static int disciplina_consume_forced_return(void) {
+    if (disciplina_forced_return != 0) {
+        int value = disciplina_forced_return;
+        disciplina_forced_return = 0;
+        return value;
+    }
+    return 0;
+}
+
+void disciplina_set_forced_return(int valor) {
+    disciplina_forced_return = valor;
+}
 
 int read_disciplina(char *codigo, tpDisciplina *disciplina) {
+    int forced = disciplina_consume_forced_return();
+    if (forced != 0) {
+        return forced;
+    }
     if (codigo == NULL || disciplina == NULL || strlen(codigo) == 0) {
         return 2;
     }
@@ -24,6 +42,10 @@ int read_disciplina(char *codigo, tpDisciplina *disciplina) {
 }
 
 int delete_disciplina(char *codigo) {
+    int forced = disciplina_consume_forced_return();
+    if (forced != 0) {
+        return forced;
+    }
     if (codigo == NULL || strlen(codigo) == 0) {
         return 2;
     }
@@ -54,6 +76,10 @@ int delete_disciplina(char *codigo) {
 }
 
 int create_disciplina(tpDisciplina *disciplina) {
+    int forced = disciplina_consume_forced_return();
+    if (forced != 0) {
+        return forced;
+    }
     if (disciplina == NULL || strlen(disciplina->codigo) == 0 || strlen(disciplina->nome) == 0) {
         return 2;
     }
@@ -78,6 +104,10 @@ int create_disciplina(tpDisciplina *disciplina) {
 }
 
 int update_disciplina(char *codigo, tpDisciplina *disciplina) {
+    int forced = disciplina_consume_forced_return();
+    if (forced != 0) {
+        return forced;
+    }
     if (codigo == NULL || disciplina == NULL || strlen(codigo) == 0) {
         return 2;
     }
@@ -107,4 +137,26 @@ static void listarDisciplinas(void) {
         printf("  Nome:   %s\n", listaDisciplinas[i].nome);
     }
     printf("================================\n");
+}
+
+void disciplina_detach_state(tpDisciplina **lista, int *quantidade) {
+    if (lista == NULL || quantidade == NULL) {
+        return;
+    }
+    *lista = listaDisciplinas;
+    *quantidade = qtdDisciplinas;
+    listaDisciplinas = NULL;
+    qtdDisciplinas = 0;
+}
+
+void disciplina_attach_state(tpDisciplina *lista, int quantidade) {
+    if (listaDisciplinas != NULL) {
+        free(listaDisciplinas);
+    }
+    listaDisciplinas = lista;
+    qtdDisciplinas = quantidade;
+}
+
+void disciplina_free_state(tpDisciplina *lista) {
+    free(lista);
 }

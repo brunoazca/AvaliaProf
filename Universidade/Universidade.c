@@ -7,8 +7,26 @@ tpUniversidade *listaUniversidades = NULL;
 int qtdUniversidades = 0;
 
 static void listarUniversidades(void);
+static int universidade_forced_return = 0;
+
+static int universidade_consume_forced_return(void) {
+    if (universidade_forced_return != 0) {
+        int value = universidade_forced_return;
+        universidade_forced_return = 0;
+        return value;
+    }
+    return 0;
+}
+
+void universidade_set_forced_return(int valor) {
+    universidade_forced_return = valor;
+}
 
 int read_universidade(char *cnpj, tpUniversidade *universidade) {
+    int forced = universidade_consume_forced_return();
+    if (forced != 0) {
+        return forced;
+    }
     if (cnpj == NULL || universidade == NULL || strlen(cnpj) == 0) {
         return 2;
     }
@@ -24,6 +42,10 @@ int read_universidade(char *cnpj, tpUniversidade *universidade) {
 }
 
 int delete_universidade(char *cnpj){
+    int forced = universidade_consume_forced_return();
+    if (forced != 0) {
+        return forced;
+    }
     if (cnpj == NULL || strlen(cnpj) == 0) {
         return 2;
     }
@@ -59,6 +81,10 @@ int delete_universidade(char *cnpj){
 }
 
 int create_universidade(tpUniversidade *universidade) {
+    int forced = universidade_consume_forced_return();
+    if (forced != 0) {
+        return forced;
+    }
     if (universidade == NULL ||
         strlen(universidade->cnpj) == 0 ||
         strlen(universidade->nome) == 0 ||
@@ -85,6 +111,10 @@ int create_universidade(tpUniversidade *universidade) {
 }
 
 int get_universidades(tpUniversidade **universidades, int *quantidade) {
+    int forced = universidade_consume_forced_return();
+    if (forced != 0) {
+        return forced;
+    }
     if (universidades == NULL || quantidade == NULL) {
         return 2;
     }
@@ -121,4 +151,26 @@ static void listarUniversidades(void) {
         printf("  Descrição: %s\n", listaUniversidades[i].descricao);
         printf("----------------------------------\n");
     }
+}
+
+void universidade_detach_state(tpUniversidade **lista, int *quantidade) {
+    if (lista == NULL || quantidade == NULL) {
+        return;
+    }
+    *lista = listaUniversidades;
+    *quantidade = qtdUniversidades;
+    listaUniversidades = NULL;
+    qtdUniversidades = 0;
+}
+
+void universidade_attach_state(tpUniversidade *lista, int quantidade) {
+    if (listaUniversidades != NULL) {
+        free(listaUniversidades);
+    }
+    listaUniversidades = lista;
+    qtdUniversidades = quantidade;
+}
+
+void universidade_free_state(tpUniversidade *lista) {
+    free(lista);
 }

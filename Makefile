@@ -10,7 +10,17 @@ SRC := \
 	Avaliacao/avaliacao.c \
 	Aluno_Universidade/aluno_Universidade.c \
 	Professor_Disciplina/professor_disciplina.c \
-	Disciplina_Universidade/Disciplina_Universidade.c
+	Disciplina_Universidade/Disciplina_Universidade.c \
+	tests/test_utils.c \
+	tests/test_runner.c \
+	Aluno/aluno_test.c \
+	Universidade/universidade_test.c \
+	Disciplina/disciplina_test.c \
+	Professor/professor_test.c \
+	Avaliacao/avaliacao_test.c \
+	Aluno_Universidade/aluno_universidade_test.c \
+	Professor_Disciplina/professor_disciplina_test.c \
+	Disciplina_Universidade/disciplina_universidade_test.c
 
 OBJ := $(SRC:.c=.o)
 
