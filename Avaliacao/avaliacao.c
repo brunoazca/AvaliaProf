@@ -12,6 +12,7 @@ typedef struct {
 static tpAvaliacaoRegistro *listaAvaliacoes = NULL;
 static int qtdAvaliacoes = 0;
 static int avaliacao_forced_return = 0;
+static const char *ARQ_AVALIACOES = "Avaliacao/dados.json";
 
 static int validarCampos(tpAluno *aluno, tpProfessor *professor, tpAvaliacao *avaliacao);
 static int avaliacao_consume_forced_return(void) {
@@ -150,4 +151,84 @@ void avaliacao_attach_state(void *estado, int quantidade) {
 
 void avaliacao_free_state(void *estado) {
     free(estado);
+}
+
+void carregarAvaliacoes() {
+    FILE *fp = fopen(ARQ_AVALIACOES, "r");
+    if(!fp){
+        return;
+    }
+    char linha[512];
+    tpAvaliacaoRegistro r;
+    int state = 0;
+    if (listaAvaliacoes) { free(listaAvaliacoes); listaAvaliacoes = NULL; }
+    qtdAvaliacoes = 0;
+    memset(&r, 0, sizeof(r));
+    while(fgets(linha, sizeof(linha), fp)){
+        if(strstr(linha, "\"id\"")){
+            sscanf(linha, " \"%*[^:\"]\" : \"%[^\"]\"", r.avaliacao.id);
+            state = 1;
+        } else if(strstr(linha, "\"nota\"")){
+            sscanf(linha, " \"%*[^:\"]\" : \"%[^\"]\"", r.avaliacao.nota);
+        } else if(strstr(linha, "\"comentario\"")){
+            sscanf(linha, " \"%*[^:\"]\" : \"%[^\"]\"", r.avaliacao.comentario);
+        } else if(strstr(linha, "\"timestamp\"")){
+            sscanf(linha, " \"%*[^:\"]\" : \"%[^\"]\"", r.avaliacao.timestamp);
+        } else if(strstr(linha, "\"aluno_cpf\"")){
+            sscanf(linha, " \"%*[^:\"]\" : \"%[^\"]\"", r.aluno.cpf);
+        } else if(strstr(linha, "\"professor_cpf\"")){
+            sscanf(linha, " \"%*[^:\"]\" : \"%[^\"]\"", r.professor.cpf);
+            if (state == 1) {
+                listaAvaliacoes = realloc(listaAvaliacoes, (qtdAvaliacoes+1) * sizeof(tpAvaliacaoRegistro));
+                listaAvaliacoes[qtdAvaliacoes++] = r;
+                memset(&r, 0, sizeof(r));
+                state = 0;
+            }
+        }
+    }
+    fclose(fp);
+    printf("Carregadas %d avaliações do arquivo!\n", qtdAvaliacoes);
+    if (qtdAvaliacoes == 0) {
+        printf("Nenhuma avaliação cadastrada.\n");
+    } else {
+        printf("===== LISTA DE AVALIAÇÕES =====\n");
+        for (int i = 0; i < qtdAvaliacoes; i++) {
+            printf("[%d]\n", i + 1);
+            printf("  ID: %s\n", listaAvaliacoes[i].avaliacao.id);
+            printf("  Nota: %s\n", listaAvaliacoes[i].avaliacao.nota);
+            printf("  Comentário: %s\n", listaAvaliacoes[i].avaliacao.comentario);
+            printf("  Timestamp: %s\n", listaAvaliacoes[i].avaliacao.timestamp);
+            printf("  Aluno CPF: %s\n", listaAvaliacoes[i].aluno.cpf);
+            printf("  Professor CPF: %s\n", listaAvaliacoes[i].professor.cpf);
+            printf("----------------------------------\n");
+        }
+    }
+}
+
+void salvarAvaliacoes() {
+    FILE *fp = fopen(ARQ_AVALIACOES, "w");
+    if(!fp){ return; }
+    fprintf(fp, "[\n");
+    for(int i = 0; i < qtdAvaliacoes; i++){
+        fprintf(fp,
+            "  {\n"
+            "    \"id\": \"%s\",\n"
+            "    \"nota\": \"%s\",\n"
+            "    \"comentario\": \"%s\",\n"
+            "    \"timestamp\": \"%s\",\n"
+            "    \"aluno_cpf\": \"%s\",\n"
+            "    \"professor_cpf\": \"%s\"\n"
+            "  }%s\n",
+            listaAvaliacoes[i].avaliacao.id,
+            listaAvaliacoes[i].avaliacao.nota,
+            listaAvaliacoes[i].avaliacao.comentario,
+            listaAvaliacoes[i].avaliacao.timestamp,
+            listaAvaliacoes[i].aluno.cpf,
+            listaAvaliacoes[i].professor.cpf,
+            (i == qtdAvaliacoes-1 ? "" : ",")
+        );
+    }
+    fprintf(fp, "]\n");
+    fclose(fp);
+    printf("\n>> dados salvos em Avaliacao/dados.json <<\n");
 }

@@ -8,6 +8,7 @@ int qtdDisciplinas = 0;
 
 static void listarDisciplinas(void);
 static int disciplina_forced_return = 0;
+static const char *ARQ_DISCIPLINAS = "Disciplina/dados.json";
 
 static int disciplina_consume_forced_return(void) {
     if (disciplina_forced_return != 0) {
@@ -159,4 +160,52 @@ void disciplina_attach_state(tpDisciplina *lista, int quantidade) {
 
 void disciplina_free_state(tpDisciplina *lista) {
     free(lista);
+}
+
+void carregarDisciplinas() {
+    FILE *fp = fopen(ARQ_DISCIPLINAS, "r");
+    if(!fp){
+        return;
+    }
+    char linha[512];
+    tpDisciplina d;
+    int state = 0;
+    if (listaDisciplinas) { free(listaDisciplinas); listaDisciplinas = NULL; }
+    qtdDisciplinas = 0;
+    while(fgets(linha, sizeof(linha), fp)){
+        if(strstr(linha, "\"codigo\"")){
+            sscanf(linha, " \"%*[^:\"]\" : \"%[^\"]\"", d.codigo);
+            state = 1;
+        } else if(strstr(linha, "\"nome\"")){
+            sscanf(linha, " \"%*[^:\"]\" : \"%[^\"]\"", d.nome);
+            if (state == 1) {
+                listaDisciplinas = realloc(listaDisciplinas, (qtdDisciplinas+1) * sizeof(tpDisciplina));
+                listaDisciplinas[qtdDisciplinas++] = d;
+                state = 0;
+            }
+        }
+    }
+    fclose(fp);
+    printf("Carregadas %d disciplinas do arquivo!\n", qtdDisciplinas);
+    listarDisciplinas();
+}
+
+void salvarDisciplinas() {
+    FILE *fp = fopen(ARQ_DISCIPLINAS, "w");
+    if(!fp){ return; }
+    fprintf(fp, "[\n");
+    for(int i = 0; i < qtdDisciplinas; i++){
+        fprintf(fp,
+            "  {\n"
+            "    \"codigo\": \"%s\",\n"
+            "    \"nome\": \"%s\"\n"
+            "  }%s\n",
+            listaDisciplinas[i].codigo,
+            listaDisciplinas[i].nome,
+            (i == qtdDisciplinas-1 ? "" : ",")
+        );
+    }
+    fprintf(fp, "]\n");
+    fclose(fp);
+    printf("\n>> dados salvos em Disciplina/dados.json <<\n");
 }

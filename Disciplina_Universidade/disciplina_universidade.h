@@ -12,5 +12,8 @@ void disciplina_universidade_attach_state(void *relacoes, int quantidade);
 void disciplina_universidade_free_state(void *relacoes);
 void disciplina_universidade_set_forced_return(int valor);
 
+void carregarDisciplinaUniversidade();
+void salvarDisciplinaUniversidade();
+
 #endif
 

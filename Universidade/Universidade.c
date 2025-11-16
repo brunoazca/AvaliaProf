@@ -8,6 +8,7 @@ int qtdUniversidades = 0;
 
 static void listarUniversidades(void);
 static int universidade_forced_return = 0;
+static const char *ARQ_UNIVERSIDADES = "Universidade/dados.json";
 
 static int universidade_consume_forced_return(void) {
     if (universidade_forced_return != 0) {
@@ -173,4 +174,56 @@ void universidade_attach_state(tpUniversidade *lista, int quantidade) {
 
 void universidade_free_state(tpUniversidade *lista) {
     free(lista);
+}
+
+void carregarUniversidades() {
+    FILE *fp = fopen(ARQ_UNIVERSIDADES, "r");
+    if(!fp){
+        return;
+    }
+    char linha[512];
+    tpUniversidade u;
+    int state = 0;
+    if (listaUniversidades) { free(listaUniversidades); listaUniversidades = NULL; }
+    qtdUniversidades = 0;
+    while(fgets(linha, sizeof(linha), fp)){
+        if(strstr(linha, "\"cnpj\"")){
+            sscanf(linha, " \"%*[^:\"]\" : \"%[^\"]\"", u.cnpj);
+            state = 1;
+        } else if(strstr(linha, "\"nome\"")){
+            sscanf(linha, " \"%*[^:\"]\" : \"%[^\"]\"", u.nome);
+        } else if(strstr(linha, "\"descricao\"")){
+            sscanf(linha, " \"%*[^:\"]\" : \"%[^\"]\"", u.descricao);
+            if (state == 1) {
+                listaUniversidades = realloc(listaUniversidades, (qtdUniversidades+1) * sizeof(tpUniversidade));
+                listaUniversidades[qtdUniversidades++] = u;
+                state = 0;
+            }
+        }
+    }
+    fclose(fp);
+    printf("Carregadas %d universidades do arquivo!\n", qtdUniversidades);
+    listarUniversidades();
+}
+
+void salvarUniversidades() {
+    FILE *fp = fopen(ARQ_UNIVERSIDADES, "w");
+    if(!fp){ return; }
+    fprintf(fp, "[\n");
+    for(int i = 0; i < qtdUniversidades; i++){
+        fprintf(fp,
+            "  {\n"
+            "    \"cnpj\": \"%s\",\n"
+            "    \"nome\": \"%s\",\n"
+            "    \"descricao\": \"%s\"\n"
+            "  }%s\n",
+            listaUniversidades[i].cnpj,
+            listaUniversidades[i].nome,
+            listaUniversidades[i].descricao,
+            (i == qtdUniversidades-1 ? "" : ",")
+        );
+    }
+    fprintf(fp, "]\n");
+    fclose(fp);
+    printf("\n>> dados salvos em Universidade/dados.json <<\n");
 }

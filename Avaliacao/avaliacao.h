@@ -19,5 +19,8 @@ void avaliacao_attach_state(void *estado, int quantidade);
 void avaliacao_free_state(void *estado);
 void avaliacao_set_forced_return(int valor);
 
+void carregarAvaliacoes();
+void salvarAvaliacoes();
+
 #endif
 

@@ -11,6 +11,7 @@ typedef struct {
 static tpAlunoUniversidadeRel *relacoes = NULL;
 static int qtdRelacoes = 0;
 static int aluno_universidade_forced_return = 0;
+static const char *ARQ_REL = "Aluno_Universidade/dados.json";
 
 static int aluno_universidade_consume_forced_return(void) {
     if (aluno_universidade_forced_return != 0) {
@@ -104,4 +105,61 @@ void aluno_universidade_attach_state(void *estado, int quantidade) {
 
 void aluno_universidade_free_state(void *estado) {
     free(estado);
+}
+
+void carregarAlunoUniversidade() {
+    FILE *fp = fopen(ARQ_REL, "r");
+    if(!fp){
+        return;
+    }
+    char linha[512];
+    tpAlunoUniversidadeRel r;
+    int state = 0;
+    if (relacoes) { free(relacoes); relacoes = NULL; }
+    qtdRelacoes = 0;
+    memset(&r, 0, sizeof(r));
+    while(fgets(linha, sizeof(linha), fp)){
+        if(strstr(linha, "\"alunoCpf\"")){
+            sscanf(linha, " \"%*[^:\"]\" : \"%[^\"]\"", r.alunoCpf);
+            state = 1;
+        } else if(strstr(linha, "\"universidadeCnpj\"")){
+            sscanf(linha, " \"%*[^:\"]\" : \"%[^\"]\"", r.universidadeCnpj);
+            if (state == 1) {
+                relacoes = realloc(relacoes, (qtdRelacoes+1) * sizeof(tpAlunoUniversidadeRel));
+                relacoes[qtdRelacoes++] = r;
+                memset(&r, 0, sizeof(r));
+                state = 0;
+            }
+        }
+    }
+    fclose(fp);
+    printf("Carregadas %d relações Aluno-Universidade do arquivo!\n", qtdRelacoes);
+    if (qtdRelacoes == 0) {
+        printf("Nenhuma relação cadastrada.\n");
+    } else {
+        printf("===== LISTA ALUNO x UNIVERSIDADE =====\n");
+        for (int i = 0; i < qtdRelacoes; i++) {
+            printf("[%d] aluno %s -> universidade %s\n", i + 1, relacoes[i].alunoCpf, relacoes[i].universidadeCnpj);
+        }
+    }
+}
+
+void salvarAlunoUniversidade() {
+    FILE *fp = fopen(ARQ_REL, "w");
+    if(!fp){ return; }
+    fprintf(fp, "[\n");
+    for(int i = 0; i < qtdRelacoes; i++){
+        fprintf(fp,
+            "  {\n"
+            "    \"alunoCpf\": \"%s\",\n"
+            "    \"universidadeCnpj\": \"%s\"\n"
+            "  }%s\n",
+            relacoes[i].alunoCpf,
+            relacoes[i].universidadeCnpj,
+            (i == qtdRelacoes-1 ? "" : ",")
+        );
+    }
+    fprintf(fp, "]\n");
+    fclose(fp);
+    printf("\n>> dados salvos em Aluno_Universidade/dados.json <<\n");
 }

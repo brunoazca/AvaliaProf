@@ -7,6 +7,7 @@
 static tpProfessorDisciplinaRel *relacoes = NULL;
 static int qtdRelacoes = 0;
 static int professor_disciplina_forced_return = 0;
+static const char *ARQ_REL_PD = "Professor_Disciplina/dados.json";
 
 static int professor_disciplina_consume_forced_return(void) {
     if (professor_disciplina_forced_return != 0) {
@@ -131,4 +132,61 @@ void professor_disciplina_attach_state(tpProfessorDisciplinaRel *estado, int qua
 
 void professor_disciplina_free_state(tpProfessorDisciplinaRel *estado) {
     free(estado);
+}
+
+void carregarProfessorDisciplina() {
+    FILE *fp = fopen(ARQ_REL_PD, "r");
+    if(!fp){
+        return;
+    }
+    char linha[512];
+    tpProfessorDisciplinaRel r;
+    int state = 0;
+    if (relacoes) { free(relacoes); relacoes = NULL; }
+    qtdRelacoes = 0;
+    memset(&r, 0, sizeof(r));
+    while(fgets(linha, sizeof(linha), fp)){
+        if(strstr(linha, "\"disciplinaCodigo\"")){
+            sscanf(linha, " \"%*[^:\"]\" : \"%[^\"]\"", r.disciplinaCodigo);
+            state = 1;
+        } else if(strstr(linha, "\"professorCpf\"")){
+            sscanf(linha, " \"%*[^:\"]\" : \"%[^\"]\"", r.professorCpf);
+            if (state == 1) {
+                relacoes = realloc(relacoes, (qtdRelacoes+1) * sizeof(tpProfessorDisciplinaRel));
+                relacoes[qtdRelacoes++] = r;
+                memset(&r, 0, sizeof(r));
+                state = 0;
+            }
+        }
+    }
+    fclose(fp);
+    printf("Carregadas %d relações Professor-Disciplina do arquivo!\n", qtdRelacoes);
+    if (qtdRelacoes == 0) {
+        printf("Nenhuma relação cadastrada.\n");
+    } else {
+        printf("===== LISTA PROFESSOR x DISCIPLINA =====\n");
+        for (int i = 0; i < qtdRelacoes; i++) {
+            printf("[%d] disciplina %s -> professor %s\n", i + 1, relacoes[i].disciplinaCodigo, relacoes[i].professorCpf);
+        }
+    }
+}
+
+void salvarProfessorDisciplina() {
+    FILE *fp = fopen(ARQ_REL_PD, "w");
+    if(!fp){ return; }
+    fprintf(fp, "[\n");
+    for(int i = 0; i < qtdRelacoes; i++){
+        fprintf(fp,
+            "  {\n"
+            "    \"disciplinaCodigo\": \"%s\",\n"
+            "    \"professorCpf\": \"%s\"\n"
+            "  }%s\n",
+            relacoes[i].disciplinaCodigo,
+            relacoes[i].professorCpf,
+            (i == qtdRelacoes-1 ? "" : ",")
+        );
+    }
+    fprintf(fp, "]\n");
+    fclose(fp);
+    printf("\n>> dados salvos em Professor_Disciplina/dados.json <<\n");
 }

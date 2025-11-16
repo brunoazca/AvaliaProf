@@ -3,6 +3,8 @@
 tpProfessor *listaProfessores = NULL;
 int qtdProfessores = 0;
 
+static const char *ARQ_PROFESSORES = "Professor/dados.json";
+
 static int professor_forced_return = 0;
 
 static int professor_consume_forced_return(void) {
@@ -162,4 +164,56 @@ void professor_attach_state(tpProfessor *lista, int quantidade) {
 
 void professor_free_state(tpProfessor *lista) {
     free(lista);
+}
+
+void carregarProfessores() {
+    FILE *fp = fopen(ARQ_PROFESSORES, "r");
+    if(!fp){
+        return;
+    }
+    char linha[512];
+    tpProfessor p;
+    int state = 0;
+    qtdProfessores = 0;
+    if (listaProfessores) { free(listaProfessores); listaProfessores = NULL; }
+    while(fgets(linha, sizeof(linha), fp)){
+        if(strstr(linha, "\"cpf\"")){
+            sscanf(linha, " \"%*[^:\"]\" : \"%[^\"]\"", p.cpf);
+            state = 1;
+        } else if(strstr(linha, "\"nome\"")){
+            sscanf(linha, " \"%*[^:\"]\" : \"%[^\"]\"", p.nome);
+        } else if(strstr(linha, "\"area_de_atuacao\"")){
+            sscanf(linha, " \"%*[^:\"]\" : \"%[^\"]\"", p.area_de_atuacao);
+            if (state == 1) {
+                listaProfessores = realloc(listaProfessores, (qtdProfessores+1) * sizeof(tpProfessor));
+                listaProfessores[qtdProfessores++] = p;
+                state = 0;
+            }
+        }
+    }
+    fclose(fp);
+    printf("Carregados %d professores do arquivo!\n", qtdProfessores);
+    listarProfessores();
+}
+
+void salvarProfessores() {
+    FILE *fp = fopen(ARQ_PROFESSORES, "w");
+    if(!fp){ return; }
+    fprintf(fp, "[\n");
+    for(int i = 0; i < qtdProfessores; i++){
+        fprintf(fp,
+            "  {\n"
+            "    \"cpf\": \"%s\",\n"
+            "    \"nome\": \"%s\",\n"
+            "    \"area_de_atuacao\": \"%s\"\n"
+            "  }%s\n",
+            listaProfessores[i].cpf,
+            listaProfessores[i].nome,
+            listaProfessores[i].area_de_atuacao,
+            (i == qtdProfessores-1 ? "" : ",")
+        );
+    }
+    fprintf(fp, "]\n");
+    fclose(fp);
+    printf("\n>> dados salvos em Professor/dados.json <<\n");
 }

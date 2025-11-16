@@ -29,7 +29,22 @@ static void menuDisciplinaUniversidade(void);
 
 int main(void) {
     atexit(salvarJSON);
+    atexit(salvarProfessores);
+    atexit(salvarUniversidades);
+    atexit(salvarDisciplinas);
+    atexit(salvarAvaliacoes);
+    atexit(salvarAlunoUniversidade);
+    atexit(salvarProfessorDisciplina);
+    atexit(salvarDisciplinaUniversidade);
+
     carregarAlunos();
+    carregarProfessores();
+    carregarUniversidades();
+    carregarDisciplinas();
+    carregarAvaliacoes();
+    carregarAlunoUniversidade();
+    carregarProfessorDisciplina();
+    carregarDisciplinaUniversidade();
 
     bool executando = true;
     bool alunoLogado = false;

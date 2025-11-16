@@ -30,5 +30,8 @@ void professor_attach_state(tpProfessor *lista, int quantidade);
 void professor_free_state(tpProfessor *lista);
 void professor_set_forced_return(int valor);
 
+void carregarProfessores();
+void salvarProfessores();
+
 #endif
 

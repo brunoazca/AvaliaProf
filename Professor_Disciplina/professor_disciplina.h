@@ -17,5 +17,8 @@ void professor_disciplina_attach_state(tpProfessorDisciplinaRel *relacoes, int q
 void professor_disciplina_free_state(tpProfessorDisciplinaRel *relacoes);
 void professor_disciplina_set_forced_return(int valor);
 
+void carregarProfessorDisciplina();
+void salvarProfessorDisciplina();
+
 #endif
 
