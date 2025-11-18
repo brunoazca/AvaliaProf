@@ -96,7 +96,7 @@ int registrar(tpAluno *aluno) {
     return 0; // caso 0: ok
 }
 
-void salvarJSON() {
+void salvarAlunos() {
     FILE *fp;
     printf("HORA DE SALVAR");
     listarAlunos() ;

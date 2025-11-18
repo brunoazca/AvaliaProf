@@ -27,7 +27,7 @@ int read_aluno(char *cpf, tpAluno *aluno);
 int delete_aluno(char *cpf);
 int registrar(tpAluno *aluno);
 int login(char *email, char *senha);
-void salvarJSON();
+void salvarAlunos();
 void carregarAlunos();
 
 void aluno_detach_state(tpAluno **lista, int *quantidade);

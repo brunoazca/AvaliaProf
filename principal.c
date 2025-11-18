@@ -28,7 +28,7 @@ static void menuProfessorDisciplina(void);
 static void menuDisciplinaUniversidade(void);
 
 int main(void) {
-    atexit(salvarJSON);
+    atexit(salvarAlunos);
     atexit(salvarProfessores);
     atexit(salvarUniversidades);
     atexit(salvarDisciplinas);
