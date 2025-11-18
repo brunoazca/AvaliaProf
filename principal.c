@@ -184,21 +184,16 @@ static void menuAluno(bool *alunoLogado, tpAluno *alunoSessao) {
             int status = login(email, senha);
             switch (status) {
                 case 0:
-                    printf("Login bem-sucedido!\n");
                     *alunoLogado = true;
                     memset(alunoSessao, 0, sizeof(tpAluno));
                     snprintf(alunoSessao->email, sizeof(alunoSessao->email), "%s", email);
                     snprintf(alunoSessao->senha, sizeof(alunoSessao->senha), "%s", senha);
-
-                    char cpf[100];
-                    lerLinha("CPF (opcional para carregar dados completos): ", cpf, sizeof(cpf));
-                    if (strlen(cpf) > 0) {
-                        tpAluno alunoLido;
-                        if (read_aluno(cpf, &alunoLido) == 0) {
-                            *alunoSessao = alunoLido;
-                            printf("Dados do aluno carregados.\n");
-                        } else {
-                            printf("Não foi possível carregar os dados completos com o CPF informado.\n");
+                    
+                    // Buscar aluno pelo email para carregar dados completos
+                    for (int i = 0; i < qtdAlunos; i++) {
+                        if (strcmp(listaAlunos[i].email, email) == 0) {
+                            *alunoSessao = listaAlunos[i];
+                            break;
                         }
                     }
                     break;
@@ -294,17 +289,11 @@ static void menuAluno(bool *alunoLogado, tpAluno *alunoSessao) {
             lerLinha("Área de atuação: ", buffer, sizeof(buffer));
             snprintf(professor.area_de_atuacao, sizeof(professor.area_de_atuacao), "%s", buffer);
 
-            lerLinha("ID da avaliação: ", buffer, sizeof(buffer));
-            snprintf(avaliacao.id, sizeof(avaliacao.id), "%s", buffer);
-
             lerLinha("Nota: ", buffer, sizeof(buffer));
             snprintf(avaliacao.nota, sizeof(avaliacao.nota), "%s", buffer);
 
             lerLinha("Comentário: ", buffer, sizeof(buffer));
             snprintf(avaliacao.comentario, sizeof(avaliacao.comentario), "%s", buffer);
-
-            lerLinha("Timestamp: ", buffer, sizeof(buffer));
-            snprintf(avaliacao.timestamp, sizeof(avaliacao.timestamp), "%s", buffer);
 
             int status = create_avaliacao(alunoSessao, &professor, &avaliacao);
             imprimirStatusGenerico("avaliar professor", status);
@@ -549,14 +538,10 @@ static void menuAvaliacao(bool alunoLogado, tpAluno *alunoSessao) {
             lerLinha("Área de atuação: ", buffer, sizeof(buffer));
             snprintf(professor.area_de_atuacao, sizeof(professor.area_de_atuacao), "%s", buffer);
 
-            lerLinha("ID da avaliação: ", buffer, sizeof(buffer));
-            snprintf(avaliacao.id, sizeof(avaliacao.id), "%s", buffer);
             lerLinha("Nota: ", buffer, sizeof(buffer));
             snprintf(avaliacao.nota, sizeof(avaliacao.nota), "%s", buffer);
             lerLinha("Comentário: ", buffer, sizeof(buffer));
             snprintf(avaliacao.comentario, sizeof(avaliacao.comentario), "%s", buffer);
-            lerLinha("Timestamp: ", buffer, sizeof(buffer));
-            snprintf(avaliacao.timestamp, sizeof(avaliacao.timestamp), "%s", buffer);
 
             int status = create_avaliacao(alunoSessao, &professor, &avaliacao);
             imprimirStatusGenerico("criar avaliação", status);

@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
+#include <ctype.h>
 #include "avaliacao.h"
 
 typedef struct {
@@ -14,6 +16,8 @@ static int qtdAvaliacoes = 0;
 static const char *ARQ_AVALIACOES = "Avaliacao/dados.json";
 
 static int validarCampos(tpAluno *aluno, tpProfessor *professor, tpAvaliacao *avaliacao);
+static void gerarIdAleatorio(char *id, size_t tamanho);
+static void gerarTimestamp(char *timestamp, size_t tamanho);
 
 int create_avaliacao(tpAluno *aluno, tpProfessor *professor, tpAvaliacao *avaliacao) {
     if (!validarCampos(aluno, professor, avaliacao)) {
@@ -31,11 +35,20 @@ int create_avaliacao(tpAluno *aluno, tpProfessor *professor, tpAvaliacao *avalia
         return 1;
     }
 
+    // Gerar ID aleatório automaticamente
+    gerarIdAleatorio(avaliacao->id, sizeof(avaliacao->id));
+    
+    // Verificar se o ID gerado já existe (muito improvável, mas verificar mesmo assim)
     for (int i = 0; i < qtdAvaliacoes; i++) {
         if (strcmp(listaAvaliacoes[i].avaliacao.id, avaliacao->id) == 0) {
-            return 1;
+            // Se o ID já existe, gerar outro
+            gerarIdAleatorio(avaliacao->id, sizeof(avaliacao->id));
+            i = -1; // Reiniciar verificação
         }
     }
+    
+    // Gerar timestamp automaticamente
+    gerarTimestamp(avaliacao->timestamp, sizeof(avaliacao->timestamp));
 
     tpAvaliacaoRegistro *novaLista = realloc(listaAvaliacoes, (qtdAvaliacoes + 1) * sizeof(tpAvaliacaoRegistro));
     if (novaLista == NULL) {
@@ -95,10 +108,8 @@ static int validarCampos(tpAluno *aluno, tpProfessor *professor, tpAvaliacao *av
         return 0;
     }
 
-    if (strlen(avaliacao->id) == 0 ||
-        strlen(avaliacao->nota) == 0 ||
-        strlen(avaliacao->comentario) == 0 ||
-        strlen(avaliacao->timestamp) == 0) {
+    // ID e timestamp são gerados automaticamente, não precisam ser validados aqui
+    if (strlen(avaliacao->nota) == 0 || strlen(avaliacao->comentario) == 0) {
         return 0;
     }
 
@@ -108,6 +119,23 @@ static int validarCampos(tpAluno *aluno, tpProfessor *professor, tpAvaliacao *av
     }
 
     return 1;
+}
+
+static void gerarIdAleatorio(char *id, size_t tamanho) {
+    // Gera um ID aleatório usando timestamp + número aleatório
+    time_t t = time(NULL);
+    unsigned int seed = (unsigned int)(t ^ (unsigned long)id);
+    srand(seed);
+    
+    snprintf(id, tamanho, "AVAL_%ld_%d", t, rand() % 10000);
+}
+
+static void gerarTimestamp(char *timestamp, size_t tamanho) {
+    time_t t = time(NULL);
+    struct tm *tm_info = localtime(&t);
+    
+    // Formato: YYYY-MM-DD HH:MM:SS
+    strftime(timestamp, tamanho, "%Y-%m-%d %H:%M:%S", tm_info);
 }
 
 void avaliacao_detach_state(void **estado, int *quantidade) {
