@@ -10,27 +10,9 @@ typedef struct {
 
 static tpDisciplinaUniversidadeRel *relacoes = NULL;
 static int qtdRelacoes = 0;
-static int disciplina_universidade_forced_return = 0;
 static const char *ARQ_REL = "Disciplina_Universidade/dados.json";
 
-static int disciplina_universidade_consume_forced_return(void) {
-    if (disciplina_universidade_forced_return != 0) {
-        int value = disciplina_universidade_forced_return;
-        disciplina_universidade_forced_return = 0;
-        return value;
-    }
-    return 0;
-}
-
-void disciplina_universidade_set_forced_return(int valor) {
-    disciplina_universidade_forced_return = valor;
-}
-
 int link_disciplina_universidade(tpDisciplina *disciplina, tpUniversidade *universidade){
-    int forced = disciplina_universidade_consume_forced_return();
-    if (forced != 0) {
-        return forced;
-    }
     if (disciplina == NULL || universidade == NULL ||
         strlen(disciplina->codigo) == 0 || strlen(universidade->cnpj) == 0) {
         return 2;
@@ -68,10 +50,6 @@ int link_disciplina_universidade(tpDisciplina *disciplina, tpUniversidade *unive
 }
 
 int get_disciplinas_universidade(tpUniversidade *universidade, tpDisciplina **disciplinas, int *quantidade){
-    int forced = disciplina_universidade_consume_forced_return();
-    if (forced != 0) {
-        return forced;
-    }
     if (universidade == NULL || disciplinas == NULL || quantidade == NULL || strlen(universidade->cnpj) == 0) {
         return 2;
     }

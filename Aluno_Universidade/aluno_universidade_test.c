@@ -52,15 +52,11 @@ void run_tests_aluno_universidade(void) {
     test_suite_expect(&suite, "link - parâmetro inválido", 2, link_aluno_universidade(NULL, &universidade));
     test_suite_expect(&suite, "link - aluno inexistente", 1, link_aluno_universidade(&alunoNaoCadastrado, &universidade));
     test_suite_expect(&suite, "link - sucesso", 0, link_aluno_universidade(&aluno, &universidade));
-    aluno_universidade_set_forced_return(99);
-    test_suite_expect(&suite, "link - exceção forçada", 99, link_aluno_universidade(&aluno, &universidade));
 
     tpUniversidade universidadeDestino;
     test_suite_expect(&suite, "get - parâmetro inválido", 2, get_universidade_aluno(NULL, &universidadeDestino));
     test_suite_expect(&suite, "get - aluno sem vínculo", 1, get_universidade_aluno(&alunoNaoCadastrado, &universidadeDestino));
     test_suite_expect(&suite, "get - sucesso", 0, get_universidade_aluno(&aluno, &universidadeDestino));
-    aluno_universidade_set_forced_return(99);
-    test_suite_expect(&suite, "get - exceção forçada", 99, get_universidade_aluno(&aluno, &universidadeDestino));
 
     void *estadoRelacaoTeste = NULL;
     int qtdRelacaoTeste = 0;

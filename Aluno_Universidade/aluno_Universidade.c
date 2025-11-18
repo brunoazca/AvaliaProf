@@ -10,27 +10,9 @@ typedef struct {
 
 static tpAlunoUniversidadeRel *relacoes = NULL;
 static int qtdRelacoes = 0;
-static int aluno_universidade_forced_return = 0;
 static const char *ARQ_REL = "Aluno_Universidade/dados.json";
 
-static int aluno_universidade_consume_forced_return(void) {
-    if (aluno_universidade_forced_return != 0) {
-        int value = aluno_universidade_forced_return;
-        aluno_universidade_forced_return = 0;
-        return value;
-    }
-    return 0;
-}
-
-void aluno_universidade_set_forced_return(int valor) {
-    aluno_universidade_forced_return = valor;
-}
-
 int link_aluno_universidade(tpAluno *aluno, tpUniversidade *universidade){
-    int forced = aluno_universidade_consume_forced_return();
-    if (forced != 0) {
-        return forced;
-    }
     if (aluno == NULL || universidade == NULL ||
         strlen(aluno->cpf) == 0 || strlen(universidade->cnpj) == 0) {
         return 2;
@@ -68,10 +50,6 @@ int link_aluno_universidade(tpAluno *aluno, tpUniversidade *universidade){
 }
 
 int get_universidade_aluno(tpAluno *aluno, tpUniversidade *universidade){
-    int forced = aluno_universidade_consume_forced_return();
-    if (forced != 0) {
-        return forced;
-    }
     if (aluno == NULL || universidade == NULL || strlen(aluno->cpf) == 0) {
         return 2;
     }

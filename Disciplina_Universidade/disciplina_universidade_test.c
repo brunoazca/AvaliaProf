@@ -52,8 +52,6 @@ void run_tests_disciplina_universidade(void) {
     test_suite_expect(&suite, "link - parâmetro inválido", 2, link_disciplina_universidade(NULL, &universidade));
     test_suite_expect(&suite, "link - disciplina inexistente", 1, link_disciplina_universidade(&disciplinaSemCadastro, &universidade));
     test_suite_expect(&suite, "link - sucesso", 0, link_disciplina_universidade(&disciplina, &universidade));
-    disciplina_universidade_set_forced_return(99);
-    test_suite_expect(&suite, "link - exceção forçada", 99, link_disciplina_universidade(&disciplina, &universidade));
 
     tpDisciplina *lista = NULL;
     int quantidade = 0;
@@ -61,10 +59,8 @@ void run_tests_disciplina_universidade(void) {
     test_suite_expect(&suite, "get - nenhuma disciplina", 1, get_disciplinas_universidade(&universidadeSemDisciplina, &lista, &quantidade));
     test_suite_expect(&suite, "get - sucesso", 0, get_disciplinas_universidade(&universidade, &lista, &quantidade));
     free(lista);
-    disciplina_universidade_set_forced_return(99);
     lista = NULL;
     quantidade = 0;
-    test_suite_expect(&suite, "get - exceção forçada", 99, get_disciplinas_universidade(&universidade, &lista, &quantidade));
 
     void *estadoRelacaoTeste = NULL;
     int qtdRelacaoTeste = 0;

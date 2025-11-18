@@ -11,28 +11,11 @@ typedef struct {
 
 static tpAvaliacaoRegistro *listaAvaliacoes = NULL;
 static int qtdAvaliacoes = 0;
-static int avaliacao_forced_return = 0;
 static const char *ARQ_AVALIACOES = "Avaliacao/dados.json";
 
 static int validarCampos(tpAluno *aluno, tpProfessor *professor, tpAvaliacao *avaliacao);
-static int avaliacao_consume_forced_return(void) {
-    if (avaliacao_forced_return != 0) {
-        int value = avaliacao_forced_return;
-        avaliacao_forced_return = 0;
-        return value;
-    }
-    return 0;
-}
-
-void avaliacao_set_forced_return(int valor) {
-    avaliacao_forced_return = valor;
-}
 
 int create_avaliacao(tpAluno *aluno, tpProfessor *professor, tpAvaliacao *avaliacao) {
-    int forced = avaliacao_consume_forced_return();
-    if (forced != 0) {
-        return forced;
-    }
     if (!validarCampos(aluno, professor, avaliacao)) {
         return 2;
     }
@@ -69,10 +52,6 @@ int create_avaliacao(tpAluno *aluno, tpProfessor *professor, tpAvaliacao *avalia
 }
 
 int get_avaliacoes_professor(tpProfessor *professor, tpAvaliacao **avaliacoes, int *quantidade) {
-    int forced = avaliacao_consume_forced_return();
-    if (forced != 0) {
-        return forced;
-    }
     if (professor == NULL || avaliacoes == NULL || quantidade == NULL || strlen(professor->cpf) == 0) {
         return 2;
     }

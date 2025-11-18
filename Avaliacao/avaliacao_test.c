@@ -68,8 +68,6 @@ void run_tests_avaliacao(void) {
     test_suite_expect(&suite, "create_avaliacao - duplicada", 1, create_avaliacao(&aluno, &professor, &avaliacao));
     tpAvaliacao invalida = criarAvaliacao("AV2", "6"); // nota inválida
     test_suite_expect(&suite, "create_avaliacao - nota inválida", 2, create_avaliacao(&aluno, &professor, &invalida));
-    avaliacao_set_forced_return(99);
-    test_suite_expect(&suite, "create_avaliacao - exceção forçada", 99, create_avaliacao(&aluno, &professor, &avaliacao));
 
     tpAvaliacao *lista = NULL;
     int quantidade = 0;
@@ -77,10 +75,8 @@ void run_tests_avaliacao(void) {
     test_suite_expect(&suite, "get_avaliacoes_professor - sem registros", 1, get_avaliacoes_professor(&professorOutro, &lista, &quantidade));
     test_suite_expect(&suite, "get_avaliacoes_professor - sucesso", 0, get_avaliacoes_professor(&professor, &lista, &quantidade));
     free(lista);
-    avaliacao_set_forced_return(99);
     lista = NULL;
     quantidade = 0;
-    test_suite_expect(&suite, "get_avaliacoes_professor - exceção forçada", 99, get_avaliacoes_professor(&professor, &lista, &quantidade));
 
     void *estadoTeste = NULL;
     int qtdTeste = 0;
