@@ -6,27 +6,9 @@
 
 static tpProfessorDisciplinaRel *relacoes = NULL;
 static int qtdRelacoes = 0;
-static int professor_disciplina_forced_return = 0;
 static const char *ARQ_REL_PD = "Professor_Disciplina/dados.json";
 
-static int professor_disciplina_consume_forced_return(void) {
-    if (professor_disciplina_forced_return != 0) {
-        int value = professor_disciplina_forced_return;
-        professor_disciplina_forced_return = 0;
-        return value;
-    }
-    return 0;
-}
-
-void professor_disciplina_set_forced_return(int valor) {
-    professor_disciplina_forced_return = valor;
-}
-
 int link_professor_disciplina(tpDisciplina *disciplina, tpProfessor *professor){
-    int forced = professor_disciplina_consume_forced_return();
-    if (forced != 0) {
-        return forced;
-    }
     if (disciplina == NULL || professor == NULL ||
         strlen(disciplina->codigo) == 0 || strlen(professor->cpf) == 0) {
         return 2;
@@ -64,10 +46,6 @@ int link_professor_disciplina(tpDisciplina *disciplina, tpProfessor *professor){
 }
 
 int get_professores_disciplina(tpDisciplina *disciplina, tpProfessor **professores, int *quantidade){
-    int forced = professor_disciplina_consume_forced_return();
-    if (forced != 0) {
-        return forced;
-    }
     if (disciplina == NULL || professores == NULL || quantidade == NULL || strlen(disciplina->codigo) == 0) {
         return 2;
     }

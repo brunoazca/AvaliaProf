@@ -15,7 +15,6 @@ int get_universidades(tpUniversidade **universidades, int *quantidade);
 void universidade_detach_state(tpUniversidade **lista, int *quantidade);
 void universidade_attach_state(tpUniversidade *lista, int quantidade);
 void universidade_free_state(tpUniversidade *lista);
-void universidade_set_forced_return(int valor);
 
 void carregarUniversidades();
 void salvarUniversidades();

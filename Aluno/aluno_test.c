@@ -24,32 +24,23 @@ void run_tests_aluno(void) {
     aluno_detach_state(&estadoOriginal, &qtdOriginal);
 
     tpAluno alunoBase = criarAluno("00011122233", "Aluno Teste", "teste@aluno.com");
-    tpAluno alunoAux = criarAluno("44455566677", "Aluno Aux", "aux@aluno.com");
 
     test_suite_expect(&suite, "registrar - sucesso", 0, registrar(&alunoBase));
     test_suite_expect(&suite, "registrar - duplicado", 1, registrar(&alunoBase));
     test_suite_expect(&suite, "registrar - parâmetro inválido", 2, registrar(NULL));
-    aluno_set_forced_return(99);
-    test_suite_expect(&suite, "registrar - exceção forçada", 99, registrar(&alunoAux));
 
     tpAluno alunoLido;
     test_suite_expect(&suite, "read_aluno - parâmetro inválido", 2, read_aluno(NULL, &alunoLido));
     test_suite_expect(&suite, "read_aluno - não encontrado", 1, read_aluno("CPF_INEXISTENTE", &alunoLido));
     test_suite_expect(&suite, "read_aluno - sucesso", 0, read_aluno(alunoBase.cpf, &alunoLido));
-    aluno_set_forced_return(99);
-    test_suite_expect(&suite, "read_aluno - exceção forçada", 99, read_aluno(alunoBase.cpf, &alunoLido));
 
     test_suite_expect(&suite, "login - parâmetro inválido", 2, login(NULL, NULL));
     test_suite_expect(&suite, "login - credenciais inválidas", 1, login(alunoBase.email, "senha_errada"));
     test_suite_expect(&suite, "login - sucesso", 0, login(alunoBase.email, alunoBase.senha));
-    aluno_set_forced_return(99);
-    test_suite_expect(&suite, "login - exceção forçada", 99, login(alunoBase.email, alunoBase.senha));
 
     test_suite_expect(&suite, "delete_aluno - parâmetro inválido", 2, delete_aluno(NULL));
     test_suite_expect(&suite, "delete_aluno - sucesso", 0, delete_aluno(alunoBase.cpf));
     test_suite_expect(&suite, "delete_aluno - não encontrado", 1, delete_aluno(alunoBase.cpf));
-    aluno_set_forced_return(99);
-    test_suite_expect(&suite, "delete_aluno - exceção forçada", 99, delete_aluno(alunoBase.cpf));
 
     tpAluno *estadoTestes = NULL;
     int qtdTestes = 0;

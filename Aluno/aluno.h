@@ -33,5 +33,4 @@ void carregarAlunos();
 void aluno_detach_state(tpAluno **lista, int *quantidade);
 void aluno_attach_state(tpAluno *lista, int quantidade);
 void aluno_free_state(tpAluno *lista);
-void aluno_set_forced_return(int valor);
 #endif

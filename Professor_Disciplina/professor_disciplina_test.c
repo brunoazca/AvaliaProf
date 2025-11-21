@@ -50,8 +50,6 @@ void run_tests_professor_disciplina(void) {
     test_suite_expect(&suite, "link - parâmetro inválido", 2, link_professor_disciplina(NULL, &professor));
     test_suite_expect(&suite, "link - disciplina ou professor inexistente", 1, link_professor_disciplina(&disciplinaInvalida, &professorInvalido));
     test_suite_expect(&suite, "link - sucesso", 0, link_professor_disciplina(&disciplina, &professor));
-    professor_disciplina_set_forced_return(99);
-    test_suite_expect(&suite, "link - exceção forçada", 99, link_professor_disciplina(&disciplina, &professor));
 
     tpProfessor *lista = NULL;
     int quantidade = 0;
@@ -59,10 +57,8 @@ void run_tests_professor_disciplina(void) {
     test_suite_expect(&suite, "get - disciplina sem professores", 1, get_professores_disciplina(&disciplinaInvalida, &lista, &quantidade));
     test_suite_expect(&suite, "get - sucesso", 0, get_professores_disciplina(&disciplina, &lista, &quantidade));
     free(lista);
-    professor_disciplina_set_forced_return(99);
     lista = NULL;
     quantidade = 0;
-    test_suite_expect(&suite, "get - exceção forçada", 99, get_professores_disciplina(&disciplina, &lista, &quantidade));
 
     tpProfessorDisciplinaRel *estadoRelacaoTeste = NULL;
     int qtdRelacaoTeste = 0;

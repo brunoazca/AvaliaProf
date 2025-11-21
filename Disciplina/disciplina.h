@@ -19,7 +19,6 @@ int update_disciplina(char *codigo, tpDisciplina *disciplina);
 void disciplina_detach_state(tpDisciplina **lista, int *quantidade);
 void disciplina_attach_state(tpDisciplina *lista, int quantidade);
 void disciplina_free_state(tpDisciplina *lista);
-void disciplina_set_forced_return(int valor);
 
 void carregarDisciplinas();
 void salvarDisciplinas();
