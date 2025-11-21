@@ -2,7 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include "disciplina.h"
-
+#include "../Aluno_Universidade/aluno_universidade.h"
+#include "../Professor_Disciplina/professor_disciplina.h"
+#include "../Disciplina_Universidade/disciplina_universidade.h"
+#include "../Professor/professor.h"
 tpDisciplina *listaDisciplinas = NULL;
 int qtdDisciplinas = 0;
 
@@ -74,6 +77,23 @@ int create_disciplina(tpDisciplina *disciplina) {
     listaDisciplinas[qtdDisciplinas] = *disciplina;
     qtdDisciplinas++;
 
+    tpUniversidade *universidades = NULL;
+    tpProfessor *professor =NULL;
+            int quantidade = 0;
+            int status = get_universidades(&universidades, &quantidade);
+            if (status == 0) {
+                for (int i = 0; i < quantidade; i++) {
+                    if (strcmp(universidades[i].nome, disciplina->universidade) == 0){
+                        if(read_professor(disciplina->professor,professor)){
+                            link_disciplina_universidade(disciplina,&universidades[i]);
+                            link_professor_disciplina(disciplina,professor);
+                        }
+
+                        return 0;
+                    }
+                }
+            }
+
     listarDisciplinas();
     return 0;
 }
@@ -106,6 +126,8 @@ static void listarDisciplinas(void) {
         printf("[%d]\n", i + 1);
         printf("  Código: %s\n", listaDisciplinas[i].codigo);
         printf("  Nome:   %s\n", listaDisciplinas[i].nome);
+        printf("  Universidade:   %s\n", listaDisciplinas[i].universidade);
+        printf("  Professor:   %s\n", listaDisciplinas[i].professor);
     }
     printf("================================\n");
 }

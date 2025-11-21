@@ -1,6 +1,10 @@
 [
   {
-    "codigo": "4",
-    "nome": "4"
+    "codigo": "INF1040",
+    "nome": "Proj Prog Modular"
+  },
+  {
+    "codigo": "INF1009",
+    "nome": "Logica"
   }
 ]

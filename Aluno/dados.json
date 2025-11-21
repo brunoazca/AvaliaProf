@@ -1,18 +1,18 @@
 [
   {
-    "cpf": "2",
-    "nome": "2",
-    "email": "2",
-    "senha": "2",
-    "curso": "2",
-    "universidade": "2"
+    "cpf": "123456789",
+    "nome": "Bruno Cardeman",
+    "email": "brunocardeman@gmail.com",
+    "senha": "1234",
+    "curso": "TI",
+    "universidade": "PUC"
   },
   {
-    "cpf": "3",
-    "nome": "3",
-    "email": "3",
-    "senha": "3",
-    "curso": "3",
-    "universidade": "3"
+    "cpf": "123567777",
+    "nome": "Andrea Kubudi",
+    "email": "akubudi@gmail.com",
+    "senha": "123",
+    "curso": "Arquitetura",
+    "universidade": "PUC"
   }
 ]

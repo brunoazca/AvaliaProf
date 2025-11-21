@@ -1,2 +1,10 @@
 [
+  {
+    "alunoCpf": "123456789",
+    "universidadeCnpj": "1234"
+  },
+  {
+    "alunoCpf": "123567777",
+    "universidadeCnpj": "1234"
+  }
 ]
