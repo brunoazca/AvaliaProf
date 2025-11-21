@@ -1,5 +1,6 @@
 #include "aluno.h"
-
+#include "../Universidade/universidade.h"
+#include "../Aluno_Universidade/aluno_universidade.h"
 tpAluno *listaAlunos = NULL; 
 int qtdAlunos = 0;           
 
@@ -112,7 +113,19 @@ int registrar(tpAluno *aluno) {
     printf("Agora temos %d alunos cadastrados.\n\n", qtdAlunos);
     listarAlunos();
 
-    return 0; // caso 0: ok
+    tpUniversidade *universidades = NULL;
+            int quantidade = 0;
+            int status = get_universidades(&universidades, &quantidade);
+            if (status == 0) {
+                for (int i = 0; i < quantidade; i++) {
+                    if (strcmp(universidades[i].nome, aluno->universidade) == 0){
+                        link_aluno_universidade(aluno,&universidades[i]);
+                        return 0;
+                    }
+                }
+            }
+
+    return 2; // caso 0: ok
 }
 
 void salvarJSON() {
