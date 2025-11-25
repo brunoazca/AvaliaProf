@@ -6,23 +6,6 @@
 #include "../Universidade/universidade.h"
 #include "disciplina_universidade.h"
 
-static tpDisciplina criarDisciplina(const char *codigo) {
-    tpDisciplina disciplina;
-    memset(&disciplina, 0, sizeof(tpDisciplina));
-    snprintf(disciplina.codigo, sizeof(disciplina.codigo), "%s", codigo);
-    snprintf(disciplina.nome, sizeof(disciplina.nome), "%s", "Disciplina Rel");
-    return disciplina;
-}
-
-static tpUniversidade criarUniversidade(const char *cnpj) {
-    tpUniversidade universidade;
-    memset(&universidade, 0, sizeof(tpUniversidade));
-    snprintf(universidade.cnpj, sizeof(universidade.cnpj), "%s", cnpj);
-    snprintf(universidade.nome, sizeof(universidade.nome), "%s", "Uni Rel");
-    snprintf(universidade.descricao, sizeof(universidade.descricao), "%s", "Desc");
-    return universidade;
-}
-
 void run_tests_disciplina_universidade(void) {
     TestSuite suite;
     test_suite_init(&suite, "Disciplina x Universidade");
@@ -39,15 +22,15 @@ void run_tests_disciplina_universidade(void) {
     int qtdRelacao = 0;
     disciplina_universidade_detach_state(&estadoRelacao, &qtdRelacao);
 
-    tpDisciplina disciplina = criarDisciplina("DREL1");
-    tpUniversidade universidade = criarUniversidade("33.333.333/0001-33");
+    tpDisciplina disciplina = create_instancia_disciplina("DREL1", "Disciplina Rel");
+    tpUniversidade universidade = create_instancia_universidade("33.333.333/0001-33", "Uni Rel");
     create_disciplina(&disciplina);
     create_universidade(&universidade);
 
-    tpUniversidade universidadeSemDisciplina = criarUniversidade("44.444.444/0001-44");
+    tpUniversidade universidadeSemDisciplina = create_instancia_universidade("44.444.444/0001-44", "Uni Rel");
     create_universidade(&universidadeSemDisciplina);
 
-    tpDisciplina disciplinaSemCadastro = criarDisciplina("NAOEXISTE");
+    tpDisciplina disciplinaSemCadastro = create_instancia_disciplina("NAOEXISTE", "Disciplina Rel");
 
     test_suite_expect(&suite, "link - parâmetro inválido", 2, link_disciplina_universidade(NULL, &universidade));
     test_suite_expect(&suite, "link - disciplina inexistente", 1, link_disciplina_universidade(&disciplinaSemCadastro, &universidade));

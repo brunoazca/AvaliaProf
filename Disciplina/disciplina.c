@@ -201,3 +201,38 @@ void salvarDisciplinas() {
     fclose(fp);
     printf("\n>> dados salvos em Disciplina/dados.json <<\n");
 }
+
+tpDisciplina create_instancia_disciplina(const char *codigo, const char *nome) {
+    tpDisciplina disciplina;
+    memset(&disciplina, 0, sizeof(tpDisciplina));
+    if (codigo != NULL) {
+        snprintf(disciplina.codigo, sizeof(disciplina.codigo), "%s", codigo);
+    }
+    if (nome != NULL) {
+        snprintf(disciplina.nome, sizeof(disciplina.nome), "%s", nome);
+    }
+    return disciplina;
+}
+
+int get_all_disciplinas(tpDisciplina **disciplinas, int *quantidade) {
+    if (disciplinas == NULL || quantidade == NULL) {
+        return 2;
+    }
+
+    if (qtdDisciplinas == 0) {
+        *disciplinas = NULL;
+        *quantidade = 0;
+        return 1;
+    }
+
+    tpDisciplina *lista = malloc(qtdDisciplinas * sizeof(tpDisciplina));
+    if (lista == NULL) {
+        return 99;
+    }
+
+    memcpy(lista, listaDisciplinas, qtdDisciplinas * sizeof(tpDisciplina));
+    *disciplinas = lista;
+    *quantidade = qtdDisciplinas;
+
+    return 0;
+}

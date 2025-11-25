@@ -116,5 +116,30 @@ void carregarProfessores();
  */
 void salvarProfessores();
 
+/**
+ * @brief Cria uma instância de professor com valores padrão para testes
+ * @param cpf CPF do professor
+ * @param nome Nome do professor
+ * @return Estrutura tpProfessor preenchida com os valores fornecidos e valores padrão para os demais campos
+ * 
+ * @pre cpf != NULL && nome != NULL
+ * @post Retorna uma estrutura tpProfessor válida com área de atuação padrão "Algoritmos"
+ */
+tpProfessor create_instancia_professor(const char *cpf, const char *nome);
+
+/**
+ * @brief Obtém todos os professores cadastrados no sistema
+ * @param professores Ponteiro para o ponteiro do array de professores (será alocado)
+ * @param quantidade Ponteiro para a quantidade de professores encontrados
+ * @return 0 se a operação foi bem-sucedida, 1 se nenhum professor encontrado, 2 se parâmetro inválido, 99 se erro de memória
+ * 
+ * @pre professores != NULL && quantidade != NULL
+ * @post Se retorno == 0: *professores aponta para array alocado com todos os professores e *quantidade contém o número de professores
+ * @post Se retorno == 1: *professores == NULL e *quantidade == 0 (nenhum professor encontrado)
+ * @post Se retorno == 2: *professores e *quantidade não foram modificados (parâmetro inválido)
+ * @post Se retorno == 99: *professores e *quantidade não foram modificados (erro de memória)
+ */
+int get_all_professores(tpProfessor **professores, int *quantidade);
+
 #endif
 

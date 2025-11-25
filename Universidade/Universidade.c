@@ -156,8 +156,10 @@ void carregarUniversidades() {
     int state = 0;
     if (listaUniversidades) { free(listaUniversidades); listaUniversidades = NULL; }
     qtdUniversidades = 0;
+    memset(&u, 0, sizeof(tpUniversidade));
     while(fgets(linha, sizeof(linha), fp)){
         if(strstr(linha, "\"cnpj\"")){
+            memset(&u, 0, sizeof(tpUniversidade));
             sscanf(linha, " \"%*[^:\"]\" : \"%[^\"]\"", u.cnpj);
             state = 1;
         } else if(strstr(linha, "\"nome\"")){
@@ -196,4 +198,17 @@ void salvarUniversidades() {
     fprintf(fp, "]\n");
     fclose(fp);
     printf("\n>> dados salvos em Universidade/dados.json <<\n");
+}
+
+tpUniversidade create_instancia_universidade(const char *cnpj, const char *nome) {
+    tpUniversidade universidade;
+    memset(&universidade, 0, sizeof(tpUniversidade));
+    if (cnpj != NULL) {
+        snprintf(universidade.cnpj, sizeof(universidade.cnpj), "%s", cnpj);
+    }
+    if (nome != NULL) {
+        snprintf(universidade.nome, sizeof(universidade.nome), "%s", nome);
+    }
+    snprintf(universidade.descricao, sizeof(universidade.descricao), "%s", "Descrição de teste");
+    return universidade;
 }

@@ -1,15 +1,8 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "../tests/test_utils.h"
 #include "disciplina.h"
-
-static tpDisciplina criarDisciplina(const char *codigo, const char *nome) {
-    tpDisciplina disciplina;
-    memset(&disciplina, 0, sizeof(tpDisciplina));
-    snprintf(disciplina.codigo, sizeof(disciplina.codigo), "%s", codigo);
-    snprintf(disciplina.nome, sizeof(disciplina.nome), "%s", nome);
-    return disciplina;
-}
 
 void run_tests_disciplina(void) {
     TestSuite suite;
@@ -19,7 +12,7 @@ void run_tests_disciplina(void) {
     int qtdOriginal = 0;
     disciplina_detach_state(&estadoOriginal, &qtdOriginal);
 
-    tpDisciplina d1 = criarDisciplina("DISC1", "Disciplina 1");
+    tpDisciplina d1 = create_instancia_disciplina("DISC1", "Disciplina 1");
     tpDisciplina leitura;
 
     test_suite_expect(&suite, "create_disciplina - sucesso", 0, create_disciplina(&d1));
@@ -30,7 +23,7 @@ void run_tests_disciplina(void) {
     test_suite_expect(&suite, "read_disciplina - não encontrada", 1, read_disciplina("NAO_EXISTE", &leitura));
     test_suite_expect(&suite, "read_disciplina - sucesso", 0, read_disciplina(d1.codigo, &leitura));
 
-    tpDisciplina atualizacao = criarDisciplina("DISC1", "Novo Nome");
+    tpDisciplina atualizacao = create_instancia_disciplina("DISC1", "Novo Nome");
     test_suite_expect(&suite, "update_disciplina - parâmetro inválido", 2, update_disciplina(NULL, &atualizacao));
     test_suite_expect(&suite, "update_disciplina - não encontrada", 1, update_disciplina("NAO_EXISTE", &atualizacao));
     test_suite_expect(&suite, "update_disciplina - sucesso", 0, update_disciplina(d1.codigo, &atualizacao));
@@ -38,6 +31,19 @@ void run_tests_disciplina(void) {
     test_suite_expect(&suite, "delete_disciplina - parâmetro inválido", 2, delete_disciplina(NULL));
     test_suite_expect(&suite, "delete_disciplina - sucesso", 0, delete_disciplina(d1.codigo));
     test_suite_expect(&suite, "delete_disciplina - não encontrada", 1, delete_disciplina(d1.codigo));
+
+    tpDisciplina *listaDisciplinas = NULL;
+    int quantidadeDisciplinas = 0;
+    test_suite_expect(&suite, "get_all_disciplinas - parâmetro inválido", 2, get_all_disciplinas(NULL, &quantidadeDisciplinas));
+    test_suite_expect(&suite, "get_all_disciplinas - vazio", 1, get_all_disciplinas(&listaDisciplinas, &quantidadeDisciplinas));
+    free(listaDisciplinas);
+    listaDisciplinas = NULL;
+    quantidadeDisciplinas = 0;
+    
+    tpDisciplina d2 = create_instancia_disciplina("DISC2", "Disciplina 2");
+    create_disciplina(&d2);
+    test_suite_expect(&suite, "get_all_disciplinas - sucesso", 0, get_all_disciplinas(&listaDisciplinas, &quantidadeDisciplinas));
+    free(listaDisciplinas);
 
     tpDisciplina *estadoTestes = NULL;
     int qtdTestes = 0;

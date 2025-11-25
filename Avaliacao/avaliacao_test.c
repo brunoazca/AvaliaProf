@@ -6,37 +6,6 @@
 #include "../Professor/professor.h"
 #include "avaliacao.h"
 
-static tpAvaliacao criarAvaliacao(const char *id, const char *nota) {
-    tpAvaliacao avaliacao;
-    memset(&avaliacao, 0, sizeof(tpAvaliacao));
-    snprintf(avaliacao.id, sizeof(avaliacao.id), "%s", id);
-    snprintf(avaliacao.nota, sizeof(avaliacao.nota), "%s", nota);
-    snprintf(avaliacao.comentario, sizeof(avaliacao.comentario), "%s", "Muito bom");
-    snprintf(avaliacao.timestamp, sizeof(avaliacao.timestamp), "%s", "2025-11-15T10:00:00Z");
-    return avaliacao;
-}
-
-static tpAluno criarAluno(const char *cpf, const char *nome, const char *email) {
-    tpAluno aluno;
-    memset(&aluno, 0, sizeof(tpAluno));
-    snprintf(aluno.cpf, sizeof(aluno.cpf), "%s", cpf);
-    snprintf(aluno.nome, sizeof(aluno.nome), "%s", nome);
-    snprintf(aluno.email, sizeof(aluno.email), "%s", email);
-    snprintf(aluno.senha, sizeof(aluno.senha), "%s", "senha");
-    snprintf(aluno.curso, sizeof(aluno.curso), "%s", "Computação");
-    snprintf(aluno.universidade, sizeof(aluno.universidade), "%s", "UFTestes");
-    return aluno;
-}
-
-static tpProfessor criarProfessor(const char *cpf, const char *nome) {
-    tpProfessor professor;
-    memset(&professor, 0, sizeof(tpProfessor));
-    snprintf(professor.cpf, sizeof(professor.cpf), "%s", cpf);
-    snprintf(professor.nome, sizeof(professor.nome), "%s", nome);
-    snprintf(professor.area_de_atuacao, sizeof(professor.area_de_atuacao), "%s", "Álgebra");
-    return professor;
-}
-
 void run_tests_avaliacao(void) {
     TestSuite suite;
     test_suite_init(&suite, "Avaliação");
@@ -53,20 +22,20 @@ void run_tests_avaliacao(void) {
     int qtdAvaliacoes = 0;
     avaliacao_detach_state(&estadoAvaliacoes, &qtdAvaliacoes);
 
-    tpAluno aluno = criarAluno("88877766655", "Aluno Aval", "aval@aluno.com");
+    tpAluno aluno = create_instancia_aluno("88877766655", "Aluno Aval", "aval@aluno.com");
     registrar(&aluno);
 
-    tpProfessor professor = criarProfessor("55544433322", "Prof Aval");
+    tpProfessor professor = create_instancia_professor("55544433322", "Prof Aval");
     create_professor(&professor);
 
-    tpAvaliacao avaliacao = criarAvaliacao("AV1", "5");
-    tpProfessor professorOutro = criarProfessor("22233344455", "Prof Sem Aval");
+    tpAvaliacao avaliacao = create_instancia_avaliacao("AV1", "5");
+    tpProfessor professorOutro = create_instancia_professor("22233344455", "Prof Sem Aval");
     create_professor(&professorOutro);
 
     test_suite_expect(&suite, "create_avaliacao - parâmetro inválido", 2, create_avaliacao(NULL, &professor, &avaliacao));
     test_suite_expect(&suite, "create_avaliacao - sucesso", 0, create_avaliacao(&aluno, &professor, &avaliacao));
     test_suite_expect(&suite, "create_avaliacao - duplicada", 1, create_avaliacao(&aluno, &professor, &avaliacao));
-    tpAvaliacao invalida = criarAvaliacao("AV2", "6"); // nota inválida
+    tpAvaliacao invalida = create_instancia_avaliacao("AV2", "6"); // nota inválida
     test_suite_expect(&suite, "create_avaliacao - nota inválida", 2, create_avaliacao(&aluno, &professor, &invalida));
 
     tpAvaliacao *lista = NULL;
@@ -77,6 +46,12 @@ void run_tests_avaliacao(void) {
     free(lista);
     lista = NULL;
     quantidade = 0;
+
+    tpAvaliacao *todasAvaliacoes = NULL;
+    int quantidadeTodas = 0;
+    test_suite_expect(&suite, "get_all_avaliacoes - parâmetro inválido", 2, get_all_avaliacoes(NULL, &quantidadeTodas));
+    test_suite_expect(&suite, "get_all_avaliacoes - sucesso", 0, get_all_avaliacoes(&todasAvaliacoes, &quantidadeTodas));
+    free(todasAvaliacoes);
 
     void *estadoTeste = NULL;
     int qtdTeste = 0;

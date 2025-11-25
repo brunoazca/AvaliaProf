@@ -17,7 +17,6 @@ void listarAlunos() {
         printf("  CPF:          %s\n", listaAlunos[i].cpf);
         printf("  Email:        %s\n", listaAlunos[i].email);
         printf("  Curso:        %s\n", listaAlunos[i].curso);
-        printf("  Universidade: %s\n", listaAlunos[i].universidade);
         printf("-------------------------------------\n");
     }
     printf("\n");
@@ -47,10 +46,8 @@ void carregarAlunos() {
             sscanf(linha, " \"%*[^:\"]\" : \"%[^\"]\"", aluno.senha);
         } else if(strstr(linha, "\"curso\"")){
             sscanf(linha, " \"%*[^:\"]\" : \"%[^\"]\"", aluno.curso);
-        } else if(strstr(linha, "\"universidade\"")){
-            sscanf(linha, " \"%*[^:\"]\" : \"%[^\"]\"", aluno.universidade);
             
-            // depois que pegou universidade, adiciona na lista
+            // depois que pegou curso, adiciona na lista
             listaAlunos = realloc(listaAlunos, (qtdAlunos+1) * sizeof(tpAluno));
             listaAlunos[qtdAlunos] = aluno;
             qtdAlunos++;
@@ -63,7 +60,7 @@ void carregarAlunos() {
     listarAlunos();
 }
 
-int registrar(tpAluno *aluno) {
+int registrar(tpAluno *aluno, const char *cnpjUniversidade) {
     // Caso 2: parâmetro inválido
     if(aluno == NULL || strlen(aluno->cpf) == 0 || strlen(aluno->nome) == 0){
         return 2;
@@ -76,6 +73,16 @@ int registrar(tpAluno *aluno) {
         }
     }
 
+    // Se CNPJ da universidade foi fornecido, verificar se a universidade existe
+    tpUniversidade universidade;
+    int temUniversidade = 0;
+    if(cnpjUniversidade != NULL && strlen(cnpjUniversidade) > 0) {
+        if(read_universidade((char *)cnpjUniversidade, &universidade) != 0) {
+            return 3; // Universidade não encontrada
+        }
+        temUniversidade = 1;
+    }
+
     // Tentar adicionar na lista
     tpAluno *novo = realloc(listaAlunos, (qtdAlunos + 1) * sizeof(tpAluno));
     if(novo == NULL){
@@ -86,25 +93,18 @@ int registrar(tpAluno *aluno) {
     listaAlunos[qtdAlunos] = *aluno;
     qtdAlunos++;
 
+    // Se CNPJ da universidade foi fornecido, fazer o link
+    if(temUniversidade) {
+        link_aluno_universidade(aluno, &universidade);
+    }
+
     // Impressão de confirmação
     printf("\n[REGISTRADO]\n");
     printf("Nome: %s | CPF: %s\n", aluno->nome, aluno->cpf);
     printf("Agora temos %d alunos cadastrados.\n\n", qtdAlunos);
     listarAlunos();
 
-    tpUniversidade *universidades = NULL;
-            int quantidade = 0;
-            int status = get_universidades(&universidades, &quantidade);
-            if (status == 0) {
-                for (int i = 0; i < quantidade; i++) {
-                    if (strcmp(universidades[i].nome, aluno->universidade) == 0){
-                        link_aluno_universidade(aluno,&universidades[i]);
-                        return 0;
-                    }
-                }
-            }
-
-    return 2; // caso 0: ok
+    return 0; // caso 0: ok
 }
 
 void salvarAlunos() {
@@ -126,15 +126,13 @@ void salvarAlunos() {
          "    \"nome\": \"%s\",\n"
          "    \"email\": \"%s\",\n"
          "    \"senha\": \"%s\",\n"
-         "    \"curso\": \"%s\",\n"
-         "    \"universidade\": \"%s\"\n"
+         "    \"curso\": \"%s\"\n"
          "  }%s\n",
          listaAlunos[i].cpf,
          listaAlunos[i].nome,
          listaAlunos[i].email,
          listaAlunos[i].senha,
          listaAlunos[i].curso,
-         listaAlunos[i].universidade,
          (i == qtdAlunos-1 ? "" : ",")
         );
     }
@@ -235,4 +233,44 @@ void aluno_attach_state(tpAluno *lista, int quantidade) {
 
 void aluno_free_state(tpAluno *lista) {
     free(lista);
+}
+
+tpAluno create_instancia_aluno(const char *cpf, const char *nome, const char *email) {
+    tpAluno aluno;
+    memset(&aluno, 0, sizeof(tpAluno));
+    if (cpf != NULL) {
+        snprintf(aluno.cpf, sizeof(aluno.cpf), "%s", cpf);
+    }
+    if (nome != NULL) {
+        snprintf(aluno.nome, sizeof(aluno.nome), "%s", nome);
+    }
+    if (email != NULL) {
+        snprintf(aluno.email, sizeof(aluno.email), "%s", email);
+    }
+    snprintf(aluno.senha, sizeof(aluno.senha), "%s", "123456");
+    snprintf(aluno.curso, sizeof(aluno.curso), "%s", "Computação");
+    return aluno;
+}
+
+int get_all_alunos(tpAluno **alunos, int *quantidade) {
+    if (alunos == NULL || quantidade == NULL) {
+        return 2;
+    }
+
+    if (qtdAlunos == 0) {
+        *alunos = NULL;
+        *quantidade = 0;
+        return 1;
+    }
+
+    tpAluno *lista = malloc(qtdAlunos * sizeof(tpAluno));
+    if (lista == NULL) {
+        return 99;
+    }
+
+    memcpy(lista, listaAlunos, qtdAlunos * sizeof(tpAluno));
+    *alunos = lista;
+    *quantidade = qtdAlunos;
+
+    return 0;
 }

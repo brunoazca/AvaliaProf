@@ -61,6 +61,20 @@ int create_disciplina(tpDisciplina *disciplina);
 int update_disciplina(char *codigo, tpDisciplina *disciplina);
 
 /**
+ * @brief Obtém todas as disciplinas cadastradas no sistema
+ * @param disciplinas Ponteiro para o ponteiro do array de disciplinas (será alocado)
+ * @param quantidade Ponteiro para a quantidade de disciplinas encontradas
+ * @return 0 se a operação foi bem-sucedida, 1 se nenhuma disciplina encontrada, 2 se parâmetro inválido, 99 se erro de memória
+ * 
+ * @pre disciplinas != NULL && quantidade != NULL
+ * @post Se retorno == 0: *disciplinas aponta para array alocado com todas as disciplinas e *quantidade contém o número de disciplinas
+ * @post Se retorno == 1: *disciplinas == NULL e *quantidade == 0 (nenhuma disciplina encontrada)
+ * @post Se retorno == 2: *disciplinas e *quantidade não foram modificados (parâmetro inválido)
+ * @post Se retorno == 99: *disciplinas e *quantidade não foram modificados (erro de memória)
+ */
+int get_all_disciplinas(tpDisciplina **disciplinas, int *quantidade);
+
+/**
  * @brief Desanexa o estado da lista de disciplinas para uso em testes
  * @param lista Ponteiro para o ponteiro da lista de disciplinas
  * @param quantidade Ponteiro para a quantidade de disciplinas
@@ -112,6 +126,17 @@ void carregarDisciplinas();
  * @post Se qtdDisciplinas == 0: arquivo será criado vazio ou sobrescrito
  */
 void salvarDisciplinas();
+
+/**
+ * @brief Cria uma instância de disciplina com valores padrão para testes
+ * @param codigo Código da disciplina
+ * @param nome Nome da disciplina
+ * @return Estrutura tpDisciplina preenchida com os valores fornecidos
+ * 
+ * @pre codigo != NULL && nome != NULL
+ * @post Retorna uma estrutura tpDisciplina válida
+ */
+tpDisciplina create_instancia_disciplina(const char *codigo, const char *nome);
 
 #endif
 

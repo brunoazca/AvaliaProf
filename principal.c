@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <strings.h>
+#include <unistd.h>
 
 #include "Aluno/aluno.h"
 #include "Professor/professor.h"
@@ -16,7 +17,9 @@
 #include "tests/test_runner.h"
 
 static void lerLinha(const char *mensagem, char *dest, size_t tamanho);
+static int lerNumero(const char *mensagem);
 static void imprimirStatusGenerico(const char *acao, int status);
+static void printfLAVIO(void);
 static void menuAluno(bool *alunoLogado, tpAluno *alunoSessao);
 static void menuProfessor(void);
 static void menuUniversidade(void);
@@ -28,6 +31,7 @@ static void menuProfessorDisciplina(void);
 static void menuDisciplinaUniversidade(void);
 
 int main(void) {
+    atexit(printfLAVIO);
     atexit(salvarAlunos);
     atexit(salvarProfessores);
     atexit(salvarUniversidades);
@@ -111,6 +115,12 @@ static void lerLinha(const char *mensagem, char *dest, size_t tamanho) {
     dest[strcspn(dest, "\n")] = '\0';
 }
 
+static int lerNumero(const char *mensagem) {
+    char buffer[32];
+    lerLinha(mensagem, buffer, sizeof(buffer));
+    return atoi(buffer);
+}
+
 static void imprimirStatusGenerico(const char *acao, int status) {
     switch (status) {
         case 0:
@@ -131,24 +141,47 @@ static void imprimirStatusGenerico(const char *acao, int status) {
     }
 }
 
+static void printfLAVIO(void) {
+    FILE *fp = fopen("flaviofile.txt", "r");
+    if (fp == NULL) {
+        return;
+    }
+    
+    char linha[512];
+    while (fgets(linha, sizeof(linha), fp) != NULL) {
+        printf("%s", linha);
+        fflush(stdout);  // Garante que a linha seja impressa imediatamente
+        usleep(20000);  // 0,1 segundo = 100000 microsegundos
+    }
+    
+    fclose(fp);
+}
+
 static void menuAluno(bool *alunoLogado, tpAluno *alunoSessao) {
     bool voltar = false;
 
     while (!voltar) {
-        char opcao[32];
         printf("\n=== Módulo Aluno ===\n");
-        printf("Opções: registrar, login, logout, ler, deletar, avaliar, voltar\n");
+        printf("1 - Registrar\n");
+        printf("2 - Login\n");
+        printf("3 - Logout\n");
+        printf("4 - Ler\n");
+        printf("5 - Listar\n");
+        printf("6 - Deletar\n");
+        printf("7 - Avaliar\n");
+        printf("0 - Voltar\n");
         if (*alunoLogado) {
-            printf("Aluno logado: %s\n", alunoSessao->nome[0] ? alunoSessao->nome : alunoSessao->email);
+            printf("\nAluno logado: %s\n", alunoSessao->nome[0] ? alunoSessao->nome : alunoSessao->email);
         }
-        lerLinha("> ", opcao, sizeof(opcao));
+        int opcao = lerNumero("Escolha uma opção: ");
 
-        if (strcasecmp(opcao, "voltar") == 0 || strcmp(opcao, "0") == 0) {
+        if (opcao == 0) {
             voltar = true;
-        } else if (strcasecmp(opcao, "registrar") == 0 || strcasecmp(opcao, "adda") == 0) {
+        } else if (opcao == 1) {
             tpAluno novoAluno;
             memset(&novoAluno, 0, sizeof(tpAluno));
             char buffer[150];
+            char cnpjUniversidade[100] = "";
 
             lerLinha("CPF: ", buffer, sizeof(buffer));
             snprintf(novoAluno.cpf, sizeof(novoAluno.cpf), "%s", buffer);
@@ -165,18 +198,18 @@ static void menuAluno(bool *alunoLogado, tpAluno *alunoSessao) {
             lerLinha("Curso: ", buffer, sizeof(buffer));
             snprintf(novoAluno.curso, sizeof(novoAluno.curso), "%s", buffer);
 
-            lerLinha("Universidade: ", buffer, sizeof(buffer));
-            snprintf(novoAluno.universidade, sizeof(novoAluno.universidade), "%s", buffer);
+            lerLinha("CNPJ da Universidade (ou deixe em branco para não vincular): ", cnpjUniversidade, sizeof(cnpjUniversidade));
 
-            int status = registrar(&novoAluno);
+            int status = registrar(&novoAluno, strlen(cnpjUniversidade) > 0 ? cnpjUniversidade : NULL);
             switch (status) {
                 case 0:  printf("\nAluno cadastrado com sucesso!\n\n"); break;
                 case 1:  printf("\nFalha ao registrar: já existe um aluno com este CPF.\n\n"); break;
                 case 2:  printf("\nParâmetro inválido.\n\n"); break;
+                case 3:  printf("\nFalha ao registrar: universidade não encontrada.\n\n"); break;
                 case 99: printf("\nCancelamento por exceção.\n\n"); break;
                 default: printf("\nErro desconhecido ao registrar.\n\n"); break;
             }
-        } else if (strcasecmp(opcao, "login") == 0) {
+        } else if (opcao == 2) {
             char cpf[100];
             char senha[100];
 
@@ -209,7 +242,7 @@ static void menuAluno(bool *alunoLogado, tpAluno *alunoSessao) {
                     printf("Erro desconhecido.\n");
                     break;
             }
-        } else if (strcasecmp(opcao, "logout") == 0) {
+        } else if (opcao == 3) {
             if (*alunoLogado) {
                 *alunoLogado = false;
                 memset(alunoSessao, 0, sizeof(tpAluno));
@@ -217,7 +250,7 @@ static void menuAluno(bool *alunoLogado, tpAluno *alunoSessao) {
             } else {
                 printf("Nenhum aluno está logado.\n");
             }
-        } else if (strcasecmp(opcao, "ler") == 0 || strcasecmp(opcao, "reada") == 0) {
+        } else if (opcao == 4) {
             char cpf[100];
             tpAluno alunoLido;
 
@@ -230,7 +263,6 @@ static void menuAluno(bool *alunoLogado, tpAluno *alunoSessao) {
                     printf("CPF: %s\n", alunoLido.cpf);
                     printf("Email: %s\n", alunoLido.email);
                     printf("Curso: %s\n", alunoLido.curso);
-                    printf("Universidade: %s\n", alunoLido.universidade);
                     break;
                 case 1:
                     printf("\nAluno não encontrado.\n");
@@ -245,7 +277,23 @@ static void menuAluno(bool *alunoLogado, tpAluno *alunoSessao) {
                     printf("\nErro desconhecido.\n");
                     break;
             }
-        } else if (strcasecmp(opcao, "deletar") == 0 || strcasecmp(opcao, "dela") == 0) {
+        } else if (opcao == 5) {
+            tpAluno *alunos = NULL;
+            int quantidade = 0;
+            int status = get_all_alunos(&alunos, &quantidade);
+            if (status == 0) {
+                printf("\nAlunos cadastrados:\n");
+                for (int i = 0; i < quantidade; i++) {
+                    printf("[%d] %s (CPF: %s)\n", i + 1, alunos[i].nome, alunos[i].cpf);
+                    printf("    Email: %s | Curso: %s\n", alunos[i].email, alunos[i].curso);
+                }
+            } else if (status == 1) {
+                printf("\nNenhum aluno cadastrado.\n");
+            } else {
+                imprimirStatusGenerico("listar alunos", status);
+            }
+            free(alunos);
+        } else if (opcao == 6) {
             char cpf[100];
             lerLinha("CPF do aluno a remover: ", cpf, sizeof(cpf));
 
@@ -267,7 +315,7 @@ static void menuAluno(bool *alunoLogado, tpAluno *alunoSessao) {
                     printf("Erro desconhecido.\n");
                     break;
             }
-        } else if (strcasecmp(opcao, "avaliar") == 0) {
+        } else if (opcao == 7) {
             if (!*alunoLogado) {
                 printf("Faça login como aluno para avaliar um professor.\n");
                 continue;
@@ -306,14 +354,18 @@ static void menuProfessor(void) {
     bool voltar = false;
 
     while (!voltar) {
-        char opcao[32];
         printf("\n=== Módulo Professor ===\n");
-        printf("Opções: criar, ler, atualizar, deletar, voltar\n");
-        lerLinha("> ", opcao, sizeof(opcao));
+        printf("1 - Criar\n");
+        printf("2 - Ler\n");
+        printf("3 - Listar\n");
+        printf("4 - Atualizar\n");
+        printf("5 - Deletar\n");
+        printf("0 - Voltar\n");
+        int opcao = lerNumero("Escolha uma opção: ");
 
-        if (strcasecmp(opcao, "voltar") == 0 || strcmp(opcao, "0") == 0) {
+        if (opcao == 0) {
             voltar = true;
-        } else if (strcasecmp(opcao, "criar") == 0) {
+        } else if (opcao == 1) {
             tpProfessor professor;
             memset(&professor, 0, sizeof(tpProfessor));
             char buffer[150];
@@ -327,7 +379,7 @@ static void menuProfessor(void) {
 
             int status = create_professor(&professor);
             imprimirStatusGenerico("criar professor", status);
-        } else if (strcasecmp(opcao, "ler") == 0) {
+        } else if (opcao == 2) {
             char cpf[100];
             tpProfessor professor;
             memset(&professor, 0, sizeof(tpProfessor));
@@ -342,7 +394,23 @@ static void menuProfessor(void) {
             } else {
                 imprimirStatusGenerico("ler professor", status);
             }
-        } else if (strcasecmp(opcao, "atualizar") == 0) {
+        } else if (opcao == 3) {
+            tpProfessor *professores = NULL;
+            int quantidade = 0;
+            int status = get_all_professores(&professores, &quantidade);
+            if (status == 0) {
+                printf("\nProfessores cadastrados:\n");
+                for (int i = 0; i < quantidade; i++) {
+                    printf("[%d] %s (CPF: %s)\n", i + 1, professores[i].nome, professores[i].cpf);
+                    printf("    Área: %s\n", professores[i].area_de_atuacao);
+                }
+            } else if (status == 1) {
+                printf("\nNenhum professor cadastrado.\n");
+            } else {
+                imprimirStatusGenerico("listar professores", status);
+            }
+            free(professores);
+        } else if (opcao == 4) {
             char cpf[100];
             tpProfessor professor;
             memset(&professor, 0, sizeof(tpProfessor));
@@ -354,7 +422,7 @@ static void menuProfessor(void) {
 
             int status = update_professor(cpf, &professor);
             imprimirStatusGenerico("atualizar professor", status);
-        } else if (strcasecmp(opcao, "deletar") == 0) {
+        } else if (opcao == 5) {
             char cpf[100];
             lerLinha("CPF do professor a deletar: ", cpf, sizeof(cpf));
 
@@ -370,14 +438,17 @@ static void menuUniversidade(void) {
     bool voltar = false;
 
     while (!voltar) {
-        char opcao[32];
         printf("\n=== Módulo Universidade ===\n");
-        printf("Opções: criar, ler, deletar, listar, voltar\n");
-        lerLinha("> ", opcao, sizeof(opcao));
+        printf("1 - Criar\n");
+        printf("2 - Ler\n");
+        printf("3 - Deletar\n");
+        printf("4 - Listar\n");
+        printf("0 - Voltar\n");
+        int opcao = lerNumero("Escolha uma opção: ");
 
-        if (strcasecmp(opcao, "voltar") == 0 || strcmp(opcao, "0") == 0) {
+        if (opcao == 0) {
             voltar = true;
-        } else if (strcasecmp(opcao, "criar") == 0) {
+        } else if (opcao == 1) {
             tpUniversidade universidade;
             memset(&universidade, 0, sizeof(tpUniversidade));
             char buffer[255];
@@ -391,7 +462,7 @@ static void menuUniversidade(void) {
 
             int status = create_universidade(&universidade);
             imprimirStatusGenerico("criar universidade", status);
-        } else if (strcasecmp(opcao, "ler") == 0) {
+        } else if (opcao == 2) {
             char cnpj[100];
             tpUniversidade universidade;
             memset(&universidade, 0, sizeof(tpUniversidade));
@@ -406,13 +477,13 @@ static void menuUniversidade(void) {
             } else {
                 imprimirStatusGenerico("ler universidade", status);
             }
-        } else if (strcasecmp(opcao, "deletar") == 0) {
+        } else if (opcao == 3) {
             char cnpj[100];
             lerLinha("CNPJ da universidade: ", cnpj, sizeof(cnpj));
 
             int status = delete_universidade(cnpj);
             imprimirStatusGenerico("deletar universidade", status);
-        } else if (strcasecmp(opcao, "listar") == 0) {
+        } else if (opcao == 4) {
             tpUniversidade *universidades = NULL;
             int quantidade = 0;
             int status = get_universidades(&universidades, &quantidade);
@@ -435,14 +506,18 @@ static void menuDisciplina(void) {
     bool voltar = false;
 
     while (!voltar) {
-        char opcao[32];
         printf("\n=== Módulo Disciplina ===\n");
-        printf("Opções: criar, ler, atualizar, deletar, voltar\n");
-        lerLinha("> ", opcao, sizeof(opcao));
+        printf("1 - Criar\n");
+        printf("2 - Ler\n");
+        printf("3 - Listar\n");
+        printf("4 - Atualizar\n");
+        printf("5 - Deletar\n");
+        printf("0 - Voltar\n");
+        int opcao = lerNumero("Escolha uma opção: ");
 
-        if (strcasecmp(opcao, "voltar") == 0 || strcmp(opcao, "0") == 0) {
+        if (opcao == 0) {
             voltar = true;
-        } else if (strcasecmp(opcao, "criar") == 0) {
+        } else if (opcao == 1) {
             tpDisciplina disciplina;
             memset(&disciplina, 0, sizeof(tpDisciplina));
 
@@ -453,7 +528,7 @@ static void menuDisciplina(void) {
             
             int status = create_disciplina(&disciplina);
             imprimirStatusGenerico("criar disciplina", status);
-        } else if (strcasecmp(opcao, "ler") == 0) {
+        } else if (opcao == 2) {
             char codigo[50];
             tpDisciplina disciplina;
             memset(&disciplina, 0, sizeof(tpDisciplina));
@@ -467,7 +542,22 @@ static void menuDisciplina(void) {
             } else {
                 imprimirStatusGenerico("ler disciplina", status);
             }
-        } else if (strcasecmp(opcao, "atualizar") == 0) {
+        } else if (opcao == 3) {
+            tpDisciplina *disciplinas = NULL;
+            int quantidade = 0;
+            int status = get_all_disciplinas(&disciplinas, &quantidade);
+            if (status == 0) {
+                printf("\nDisciplinas cadastradas:\n");
+                for (int i = 0; i < quantidade; i++) {
+                    printf("[%d] %s (%s)\n", i + 1, disciplinas[i].nome, disciplinas[i].codigo);
+                }
+            } else if (status == 1) {
+                printf("\nNenhuma disciplina cadastrada.\n");
+            } else {
+                imprimirStatusGenerico("listar disciplinas", status);
+            }
+            free(disciplinas);
+        } else if (opcao == 4) {
             char codigo[50];
             tpDisciplina disciplina;
             memset(&disciplina, 0, sizeof(tpDisciplina));
@@ -477,7 +567,7 @@ static void menuDisciplina(void) {
 
             int status = update_disciplina(codigo, &disciplina);
             imprimirStatusGenerico("atualizar disciplina", status);
-        } else if (strcasecmp(opcao, "deletar") == 0) {
+        } else if (opcao == 5) {
             char codigo[50];
             lerLinha("Código da disciplina: ", codigo, sizeof(codigo));
 
@@ -493,14 +583,16 @@ static void menuAvaliacao(bool alunoLogado, tpAluno *alunoSessao) {
     bool voltar = false;
 
     while (!voltar) {
-        char opcao[32];
         printf("\n=== Módulo Avaliação ===\n");
-        printf("Opções: listar, criar, voltar\n");
-        lerLinha("> ", opcao, sizeof(opcao));
+        printf("1 - Listar por professor\n");
+        printf("2 - Listar todas\n");
+        printf("3 - Criar\n");
+        printf("0 - Voltar\n");
+        int opcao = lerNumero("Escolha uma opção: ");
 
-        if (strcasecmp(opcao, "voltar") == 0 || strcmp(opcao, "0") == 0) {
+        if (opcao == 0) {
             voltar = true;
-        } else if (strcasecmp(opcao, "listar") == 0) {
+        } else if (opcao == 1) {
             tpProfessor professor;
             tpAvaliacao *avaliacoes = NULL;
             int quantidade = 0;
@@ -520,7 +612,26 @@ static void menuAvaliacao(bool alunoLogado, tpAluno *alunoSessao) {
             }
             imprimirStatusGenerico("listar avaliações", status);
             free(avaliacoes);
-        } else if (strcasecmp(opcao, "criar") == 0) {
+        } else if (opcao == 2) {
+            tpAvaliacao *avaliacoes = NULL;
+            int quantidade = 0;
+            int status = get_all_avaliacoes(&avaliacoes, &quantidade);
+            if (status == 0) {
+                printf("\nTodas as avaliações cadastradas:\n");
+                for (int i = 0; i < quantidade; i++) {
+                    printf("[%d]\n", i + 1);
+                    printf("  ID: %s\n", avaliacoes[i].id);
+                    printf("  Nota: %s\n", avaliacoes[i].nota);
+                    printf("  Comentário: %s\n", avaliacoes[i].comentario);
+                    printf("  Timestamp: %s\n", avaliacoes[i].timestamp);
+                }
+            } else if (status == 1) {
+                printf("\nNenhuma avaliação cadastrada.\n");
+            } else {
+                imprimirStatusGenerico("listar todas as avaliações", status);
+            }
+            free(avaliacoes);
+        } else if (opcao == 3) {
             if (!alunoLogado) {
                 printf("É necessário estar logado como aluno para criar uma avaliação.\n");
                 continue;
@@ -556,18 +667,20 @@ static void menuRelacionamentos(void) {
     bool voltar = false;
 
     while (!voltar) {
-        char opcao[32];
         printf("\n=== Relacionamentos ===\n");
-        printf("Opções: aluno_universidade, professor_disciplina, disciplina_universidade, voltar\n");
-        lerLinha("> ", opcao, sizeof(opcao));
+        printf("1 - Aluno x Universidade\n");
+        printf("2 - Professor x Disciplina\n");
+        printf("3 - Disciplina x Universidade\n");
+        printf("0 - Voltar\n");
+        int opcao = lerNumero("Escolha uma opção: ");
 
-        if (strcasecmp(opcao, "voltar") == 0 || strcmp(opcao, "0") == 0) {
+        if (opcao == 0) {
             voltar = true;
-        } else if (strcasecmp(opcao, "aluno_universidade") == 0) {
+        } else if (opcao == 1) {
             menuAlunoUniversidade();
-        } else if (strcasecmp(opcao, "professor_disciplina") == 0) {
+        } else if (opcao == 2) {
             menuProfessorDisciplina();
-        } else if (strcasecmp(opcao, "disciplina_universidade") == 0) {
+        } else if (opcao == 3) {
             menuDisciplinaUniversidade();
         } else {
             printf("Opção inválida.\n");
@@ -579,28 +692,26 @@ static void menuAlunoUniversidade(void) {
     bool voltar = false;
 
     while (!voltar) {
-        char opcao[32];
         printf("\n--- Relacionamento Aluno x Universidade ---\n");
-        printf("Opções: vincular, consultar, voltar\n");
-        lerLinha("> ", opcao, sizeof(opcao));
+        printf("1 - Vincular\n");
+        printf("2 - Consultar\n");
+        printf("0 - Voltar\n");
+        int opcao = lerNumero("Escolha uma opção: ");
 
-        if (strcasecmp(opcao, "voltar") == 0 || strcmp(opcao, "0") == 0) {
+        if (opcao == 0) {
             voltar = true;
-        } else if (strcasecmp(opcao, "vincular") == 0 || strcasecmp(opcao, "link") == 0) {
+        } else if (opcao == 1) {
             tpAluno aluno;
             tpUniversidade universidade;
             memset(&aluno, 0, sizeof(tpAluno));
             memset(&universidade, 0, sizeof(tpUniversidade));
 
             lerLinha("CPF do aluno: ", aluno.cpf, sizeof(aluno.cpf));
-            lerLinha("Nome do aluno: ", aluno.nome, sizeof(aluno.nome));
-
             lerLinha("CNPJ da universidade: ", universidade.cnpj, sizeof(universidade.cnpj));
-            lerLinha("Nome da universidade: ", universidade.nome, sizeof(universidade.nome));
 
             int status = link_aluno_universidade(&aluno, &universidade);
             imprimirStatusGenerico("vincular aluno à universidade", status);
-        } else if (strcasecmp(opcao, "consultar") == 0) {
+        } else if (opcao == 2) {
             tpAluno aluno;
             tpUniversidade universidade;
             memset(&aluno, 0, sizeof(tpAluno));
@@ -625,29 +736,26 @@ static void menuProfessorDisciplina(void) {
     bool voltar = false;
 
     while (!voltar) {
-        char opcao[32];
         printf("\n--- Relacionamento Professor x Disciplina ---\n");
-        printf("Opções: vincular, consultar, voltar\n");
-        lerLinha("> ", opcao, sizeof(opcao));
+        printf("1 - Vincular\n");
+        printf("2 - Consultar\n");
+        printf("0 - Voltar\n");
+        int opcao = lerNumero("Escolha uma opção: ");
 
-        if (strcasecmp(opcao, "voltar") == 0 || strcmp(opcao, "0") == 0) {
+        if (opcao == 0) {
             voltar = true;
-        } else if (strcasecmp(opcao, "vincular") == 0 || strcasecmp(opcao, "link") == 0) {
+        } else if (opcao == 1) {
             tpDisciplina disciplina;
             tpProfessor professor;
             memset(&disciplina, 0, sizeof(tpDisciplina));
             memset(&professor, 0, sizeof(tpProfessor));
 
             lerLinha("Código da disciplina: ", disciplina.codigo, sizeof(disciplina.codigo));
-            lerLinha("Nome da disciplina: ", disciplina.nome, sizeof(disciplina.nome));
-
             lerLinha("CPF do professor: ", professor.cpf, sizeof(professor.cpf));
-            lerLinha("Nome do professor: ", professor.nome, sizeof(professor.nome));
-            lerLinha("Área de atuação: ", professor.area_de_atuacao, sizeof(professor.area_de_atuacao));
 
             int status = link_professor_disciplina(&disciplina, &professor);
             imprimirStatusGenerico("vincular professor à disciplina", status);
-        } else if (strcasecmp(opcao, "consultar") == 0) {
+        } else if (opcao == 2) {
             tpDisciplina disciplina;
             tpProfessor *professores = NULL;
             int quantidade = 0;
@@ -674,28 +782,26 @@ static void menuDisciplinaUniversidade(void) {
     bool voltar = false;
 
     while (!voltar) {
-        char opcao[32];
         printf("\n--- Relacionamento Disciplina x Universidade ---\n");
-        printf("Opções: vincular, consultar, voltar\n");
-        lerLinha("> ", opcao, sizeof(opcao));
+        printf("1 - Vincular\n");
+        printf("2 - Consultar\n");
+        printf("0 - Voltar\n");
+        int opcao = lerNumero("Escolha uma opção: ");
 
-        if (strcasecmp(opcao, "voltar") == 0 || strcmp(opcao, "0") == 0) {
+        if (opcao == 0) {
             voltar = true;
-        } else if (strcasecmp(opcao, "vincular") == 0 || strcasecmp(opcao, "link") == 0) {
+        } else if (opcao == 1) {
             tpDisciplina disciplina;
             tpUniversidade universidade;
             memset(&disciplina, 0, sizeof(tpDisciplina));
             memset(&universidade, 0, sizeof(tpUniversidade));
 
             lerLinha("Código da disciplina: ", disciplina.codigo, sizeof(disciplina.codigo));
-            lerLinha("Nome da disciplina: ", disciplina.nome, sizeof(disciplina.nome));
-
             lerLinha("CNPJ da universidade: ", universidade.cnpj, sizeof(universidade.cnpj));
-            lerLinha("Nome da universidade: ", universidade.nome, sizeof(universidade.nome));
 
             int status = link_disciplina_universidade(&disciplina, &universidade);
             imprimirStatusGenerico("vincular disciplina à universidade", status);
-        } else if (strcasecmp(opcao, "consultar") == 0) {
+        } else if (opcao == 2) {
             tpUniversidade universidade;
             tpDisciplina *disciplinas = NULL;
             int quantidade = 0;

@@ -4,15 +4,6 @@
 #include "../tests/test_utils.h"
 #include "universidade.h"
 
-static tpUniversidade criarUniversidade(const char *cnpj, const char *nome) {
-    tpUniversidade universidade;
-    memset(&universidade, 0, sizeof(tpUniversidade));
-    snprintf(universidade.cnpj, sizeof(universidade.cnpj), "%s", cnpj);
-    snprintf(universidade.nome, sizeof(universidade.nome), "%s", nome);
-    snprintf(universidade.descricao, sizeof(universidade.descricao), "%s", "Descrição de teste");
-    return universidade;
-}
-
 void run_tests_universidade(void) {
     TestSuite suite;
     test_suite_init(&suite, "Universidade");
@@ -21,7 +12,7 @@ void run_tests_universidade(void) {
     int qtdOriginal = 0;
     universidade_detach_state(&estadoOriginal, &qtdOriginal);
 
-    tpUniversidade uni = criarUniversidade("11.222.333/0001-44", "Universidade Teste");
+    tpUniversidade uni = create_instancia_universidade("11.222.333/0001-44", "Universidade Teste");
     tpUniversidade leitura;
 
     tpUniversidade *lista = NULL;

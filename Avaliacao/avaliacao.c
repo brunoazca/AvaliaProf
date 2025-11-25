@@ -247,3 +247,43 @@ void salvarAvaliacoes() {
     fclose(fp);
     printf("\n>> dados salvos em Avaliacao/dados.json <<\n");
 }
+
+tpAvaliacao create_instancia_avaliacao(const char *id, const char *nota) {
+    tpAvaliacao avaliacao;
+    memset(&avaliacao, 0, sizeof(tpAvaliacao));
+    if (id != NULL) {
+        snprintf(avaliacao.id, sizeof(avaliacao.id), "%s", id);
+    }
+    if (nota != NULL) {
+        snprintf(avaliacao.nota, sizeof(avaliacao.nota), "%s", nota);
+    }
+    snprintf(avaliacao.comentario, sizeof(avaliacao.comentario), "%s", "Muito bom");
+    snprintf(avaliacao.timestamp, sizeof(avaliacao.timestamp), "%s", "2025-11-15T10:00:00Z");
+    return avaliacao;
+}
+
+int get_all_avaliacoes(tpAvaliacao **avaliacoes, int *quantidade) {
+    if (avaliacoes == NULL || quantidade == NULL) {
+        return 2;
+    }
+
+    if (qtdAvaliacoes == 0) {
+        *avaliacoes = NULL;
+        *quantidade = 0;
+        return 1;
+    }
+
+    tpAvaliacao *lista = malloc(qtdAvaliacoes * sizeof(tpAvaliacao));
+    if (lista == NULL) {
+        return 99;
+    }
+
+    for (int i = 0; i < qtdAvaliacoes; i++) {
+        lista[i] = listaAvaliacoes[i].avaliacao;
+    }
+
+    *avaliacoes = lista;
+    *quantidade = qtdAvaliacoes;
+
+    return 0;
+}

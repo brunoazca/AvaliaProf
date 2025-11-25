@@ -4,15 +4,13 @@
     "nome": "Bruno Cardeman",
     "email": "brunocardeman@gmail.com",
     "senha": "1234",
-    "curso": "TI",
-    "universidade": "PUC"
+    "curso": "TI"
   },
   {
     "cpf": "123567777",
     "nome": "Andrea Kubudi",
     "email": "akubudi@gmail.com",
     "senha": "123",
-    "curso": "Arquitetura",
-    "universidade": "PUC"
+    "curso": "Arquitetura"
   }
 ]

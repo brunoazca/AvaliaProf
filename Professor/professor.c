@@ -186,3 +186,39 @@ void salvarProfessores() {
     fclose(fp);
     printf("\n>> dados salvos em Professor/dados.json <<\n");
 }
+
+tpProfessor create_instancia_professor(const char *cpf, const char *nome) {
+    tpProfessor professor;
+    memset(&professor, 0, sizeof(tpProfessor));
+    if (cpf != NULL) {
+        snprintf(professor.cpf, sizeof(professor.cpf), "%s", cpf);
+    }
+    if (nome != NULL) {
+        snprintf(professor.nome, sizeof(professor.nome), "%s", nome);
+    }
+    snprintf(professor.area_de_atuacao, sizeof(professor.area_de_atuacao), "%s", "Algoritmos");
+    return professor;
+}
+
+int get_all_professores(tpProfessor **professores, int *quantidade) {
+    if (professores == NULL || quantidade == NULL) {
+        return 2;
+    }
+
+    if (qtdProfessores == 0) {
+        *professores = NULL;
+        *quantidade = 0;
+        return 1;
+    }
+
+    tpProfessor *lista = malloc(qtdProfessores * sizeof(tpProfessor));
+    if (lista == NULL) {
+        return 99;
+    }
+
+    memcpy(lista, listaProfessores, qtdProfessores * sizeof(tpProfessor));
+    *professores = lista;
+    *quantidade = qtdProfessores;
+
+    return 0;
+}

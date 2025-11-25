@@ -6,23 +6,6 @@
 #include "../Professor/professor.h"
 #include "professor_disciplina.h"
 
-static tpDisciplina criarDisciplina(const char *codigo) {
-    tpDisciplina disciplina;
-    memset(&disciplina, 0, sizeof(tpDisciplina));
-    snprintf(disciplina.codigo, sizeof(disciplina.codigo), "%s", codigo);
-    snprintf(disciplina.nome, sizeof(disciplina.nome), "%s", "Disciplina PD");
-    return disciplina;
-}
-
-static tpProfessor criarProfessor(const char *cpf) {
-    tpProfessor professor;
-    memset(&professor, 0, sizeof(tpProfessor));
-    snprintf(professor.cpf, sizeof(professor.cpf), "%s", cpf);
-    snprintf(professor.nome, sizeof(professor.nome), "%s", "Professor PD");
-    snprintf(professor.area_de_atuacao, sizeof(professor.area_de_atuacao), "%s", "Redes");
-    return professor;
-}
-
 void run_tests_professor_disciplina(void) {
     TestSuite suite;
     test_suite_init(&suite, "Professor x Disciplina");
@@ -39,13 +22,13 @@ void run_tests_professor_disciplina(void) {
     int qtdRelacao = 0;
     professor_disciplina_detach_state(&estadoRelacao, &qtdRelacao);
 
-    tpDisciplina disciplina = criarDisciplina("DPD1");
+    tpDisciplina disciplina = create_instancia_disciplina("DPD1", "Disciplina PD");
     create_disciplina(&disciplina);
-    tpProfessor professor = criarProfessor("99988877700");
+    tpProfessor professor = create_instancia_professor("99988877700", "Professor PD");
     create_professor(&professor);
 
-    tpDisciplina disciplinaInvalida = criarDisciplina("SEM");
-    tpProfessor professorInvalido = criarProfessor("11122233344");
+    tpDisciplina disciplinaInvalida = create_instancia_disciplina("SEM", "Disciplina PD");
+    tpProfessor professorInvalido = create_instancia_professor("11122233344", "Professor PD");
 
     test_suite_expect(&suite, "link - parâmetro inválido", 2, link_professor_disciplina(NULL, &professor));
     test_suite_expect(&suite, "link - disciplina ou professor inexistente", 1, link_professor_disciplina(&disciplinaInvalida, &professorInvalido));

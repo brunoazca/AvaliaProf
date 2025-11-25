@@ -11,7 +11,6 @@ typedef struct tpAluno {
     char email[100];
     char senha[100];
     char curso[100];
-    char universidade[100];
 } tpAluno;
 
 // só declara as funções (não implementa aqui)
@@ -45,15 +44,18 @@ int delete_aluno(char *cpf);
 /**
  * @brief Registra um novo aluno no sistema
  * @param aluno Ponteiro para a estrutura com os dados do aluno a ser registrado
- * @return 0 se o registro foi realizado com sucesso, 1 se CPF já existe, 2 se parâmetro inválido, 99 se erro de memória
+ * @param cnpjUniversidade CNPJ da universidade para vincular (pode ser NULL ou vazio para não vincular)
+ * @return 0 se o registro foi realizado com sucesso, 1 se CPF já existe, 2 se parâmetro inválido, 3 se universidade não encontrada, 99 se erro de memória
  * 
  * @pre aluno != NULL && strlen(aluno->cpf) > 0 && strlen(aluno->nome) > 0
- * @post Se retorno == 0: qtdAlunos foi incrementado em 1 e o aluno foi adicionado à lista
+ * @pre Se cnpjUniversidade != NULL && strlen(cnpjUniversidade) > 0: universidade deve existir no sistema
+ * @post Se retorno == 0: qtdAlunos foi incrementado em 1, o aluno foi adicionado à lista e vinculado à universidade (se CNPJ fornecido)
  * @post Se retorno == 1: lista permanece inalterada (CPF duplicado)
  * @post Se retorno == 2: lista permanece inalterada (parâmetro inválido)
+ * @post Se retorno == 3: lista permanece inalterada (universidade não encontrada)
  * @post Se retorno == 99: lista permanece inalterada (erro de memória)
  */
-int registrar(tpAluno *aluno);
+int registrar(tpAluno *aluno, const char *cnpjUniversidade);
 
 /**
  * @brief Realiza o login de um aluno no sistema
@@ -120,4 +122,30 @@ void aluno_attach_state(tpAluno *lista, int quantidade);
  * @post Se lista == NULL: nenhuma operação realizada
  */
 void aluno_free_state(tpAluno *lista);
+
+/**
+ * @brief Cria uma instância de aluno com valores padrão para testes
+ * @param cpf CPF do aluno
+ * @param nome Nome do aluno
+ * @param email Email do aluno
+ * @return Estrutura tpAluno preenchida com os valores fornecidos e valores padrão para os demais campos
+ * 
+ * @pre cpf != NULL && nome != NULL && email != NULL
+ * @post Retorna uma estrutura tpAluno válida com senha padrão "123456" e curso padrão "Computação"
+ */
+tpAluno create_instancia_aluno(const char *cpf, const char *nome, const char *email);
+
+/**
+ * @brief Obtém todos os alunos cadastrados no sistema
+ * @param alunos Ponteiro para o ponteiro do array de alunos (será alocado)
+ * @param quantidade Ponteiro para a quantidade de alunos encontrados
+ * @return 0 se a operação foi bem-sucedida, 1 se nenhum aluno encontrado, 2 se parâmetro inválido, 99 se erro de memória
+ * 
+ * @pre alunos != NULL && quantidade != NULL
+ * @post Se retorno == 0: *alunos aponta para array alocado com todos os alunos e *quantidade contém o número de alunos
+ * @post Se retorno == 1: *alunos == NULL e *quantidade == 0 (nenhum aluno encontrado)
+ * @post Se retorno == 2: *alunos e *quantidade não foram modificados (parâmetro inválido)
+ * @post Se retorno == 99: *alunos e *quantidade não foram modificados (erro de memória)
+ */
+int get_all_alunos(tpAluno **alunos, int *quantidade);
 #endif

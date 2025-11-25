@@ -113,5 +113,16 @@ void carregarUniversidades();
  */
 void salvarUniversidades();
 
+/**
+ * @brief Cria uma instância de universidade com valores padrão para testes
+ * @param cnpj CNPJ da universidade
+ * @param nome Nome da universidade
+ * @return Estrutura tpUniversidade preenchida com os valores fornecidos e valores padrão para os demais campos
+ * 
+ * @pre cnpj != NULL && nome != NULL
+ * @post Retorna uma estrutura tpUniversidade válida com descrição padrão "Descrição de teste"
+ */
+tpUniversidade create_instancia_universidade(const char *cnpj, const char *nome);
+
 #endif
 

@@ -1,16 +1,8 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "../tests/test_utils.h"
 #include "professor.h"
-
-static tpProfessor criarProfessor(const char *cpf, const char *nome) {
-    tpProfessor professor;
-    memset(&professor, 0, sizeof(tpProfessor));
-    snprintf(professor.cpf, sizeof(professor.cpf), "%s", cpf);
-    snprintf(professor.nome, sizeof(professor.nome), "%s", nome);
-    snprintf(professor.area_de_atuacao, sizeof(professor.area_de_atuacao), "%s", "Algoritmos");
-    return professor;
-}
 
 void run_tests_professor(void) {
     TestSuite suite;
@@ -20,7 +12,7 @@ void run_tests_professor(void) {
     int qtdOriginal = 0;
     professor_detach_state(&estadoOriginal, &qtdOriginal);
 
-    tpProfessor p1 = criarProfessor("12345678900", "Prof. Teste");
+    tpProfessor p1 = create_instancia_professor("12345678900", "Prof. Teste");
     tpProfessor leitura;
 
     test_suite_expect(&suite, "create_professor - sucesso", 0, create_professor(&p1));
@@ -31,7 +23,7 @@ void run_tests_professor(void) {
     test_suite_expect(&suite, "read_professor - não encontrado", 1, read_professor("000", &leitura));
     test_suite_expect(&suite, "read_professor - sucesso", 0, read_professor(p1.cpf, &leitura));
 
-    tpProfessor atualizacao = criarProfessor(p1.cpf, "Prof. Atualizado");
+    tpProfessor atualizacao = create_instancia_professor(p1.cpf, "Prof. Atualizado");
     test_suite_expect(&suite, "update_professor - parâmetro inválido", 2, update_professor(NULL, &atualizacao));
     test_suite_expect(&suite, "update_professor - não encontrado", 1, update_professor("000", &atualizacao));
     test_suite_expect(&suite, "update_professor - sucesso", 0, update_professor(p1.cpf, &atualizacao));
@@ -39,6 +31,19 @@ void run_tests_professor(void) {
     test_suite_expect(&suite, "delete_professor - parâmetro inválido", 2, delete_professor(NULL));
     test_suite_expect(&suite, "delete_professor - sucesso", 0, delete_professor(p1.cpf));
     test_suite_expect(&suite, "delete_professor - não encontrado", 1, delete_professor(p1.cpf));
+
+    tpProfessor *listaProfessores = NULL;
+    int quantidadeProfessores = 0;
+    test_suite_expect(&suite, "get_all_professores - parâmetro inválido", 2, get_all_professores(NULL, &quantidadeProfessores));
+    test_suite_expect(&suite, "get_all_professores - vazio", 1, get_all_professores(&listaProfessores, &quantidadeProfessores));
+    free(listaProfessores);
+    listaProfessores = NULL;
+    quantidadeProfessores = 0;
+    
+    tpProfessor p2 = create_instancia_professor("98765432100", "Prof. 2");
+    create_professor(&p2);
+    test_suite_expect(&suite, "get_all_professores - sucesso", 0, get_all_professores(&listaProfessores, &quantidadeProfessores));
+    free(listaProfessores);
 
     tpProfessor *estadoTestes = NULL;
     int qtdTestes = 0;

@@ -46,6 +46,20 @@ int create_avaliacao(tpAluno *aluno, tpProfessor *professor, tpAvaliacao *avalia
 int get_avaliacoes_professor(tpProfessor *professor, tpAvaliacao **avaliacoes, int *quantidade);
 
 /**
+ * @brief Obtém todas as avaliações cadastradas no sistema
+ * @param avaliacoes Ponteiro para o ponteiro do array de avaliações (será alocado)
+ * @param quantidade Ponteiro para a quantidade de avaliações encontradas
+ * @return 0 se a operação foi bem-sucedida, 1 se nenhuma avaliação encontrada, 2 se parâmetro inválido, 99 se erro de memória
+ * 
+ * @pre avaliacoes != NULL && quantidade != NULL
+ * @post Se retorno == 0: *avaliacoes aponta para array alocado com todas as avaliações e *quantidade contém o número de avaliações
+ * @post Se retorno == 1: *avaliacoes == NULL e *quantidade == 0 (nenhuma avaliação encontrada)
+ * @post Se retorno == 2: *avaliacoes e *quantidade não foram modificados (parâmetro inválido)
+ * @post Se retorno == 99: *avaliacoes e *quantidade não foram modificados (erro de memória)
+ */
+int get_all_avaliacoes(tpAvaliacao **avaliacoes, int *quantidade);
+
+/**
  * @brief Desanexa o estado das avaliações para uso em testes
  * @param estado Ponteiro para o ponteiro do estado das avaliações
  * @param quantidade Ponteiro para a quantidade de avaliações
@@ -97,6 +111,17 @@ void carregarAvaliacoes();
  * @post Se lista vazia: arquivo será criado vazio ou sobrescrito
  */
 void salvarAvaliacoes();
+
+/**
+ * @brief Cria uma instância de avaliação com valores padrão para testes
+ * @param id ID da avaliação
+ * @param nota Nota da avaliação
+ * @return Estrutura tpAvaliacao preenchida com os valores fornecidos e valores padrão para os demais campos
+ * 
+ * @pre id != NULL && nota != NULL
+ * @post Retorna uma estrutura tpAvaliacao válida com comentário padrão "Muito bom" e timestamp padrão "2025-11-15T10:00:00Z"
+ */
+tpAvaliacao create_instancia_avaliacao(const char *id, const char *nota);
 
 #endif
 
