@@ -35,8 +35,8 @@ void run_tests_aluno(void) {
     test_suite_expect(&suite, "read_aluno - sucesso", 0, read_aluno(alunoBase.cpf, &alunoLido));
 
     test_suite_expect(&suite, "login - parâmetro inválido", 2, login(NULL, NULL));
-    test_suite_expect(&suite, "login - credenciais inválidas", 1, login(alunoBase.email, "senha_errada"));
-    test_suite_expect(&suite, "login - sucesso", 0, login(alunoBase.email, alunoBase.senha));
+    test_suite_expect(&suite, "login - credenciais inválidas", 1, login(alunoBase.cpf, "senha_errada"));
+    test_suite_expect(&suite, "login - sucesso", 0, login(alunoBase.cpf, alunoBase.senha));
 
     test_suite_expect(&suite, "delete_aluno - parâmetro inválido", 2, delete_aluno(NULL));
     test_suite_expect(&suite, "delete_aluno - sucesso", 0, delete_aluno(alunoBase.cpf));

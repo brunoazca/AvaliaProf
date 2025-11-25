@@ -146,27 +146,29 @@ static void menuAluno(bool *alunoLogado, tpAluno *alunoSessao) {
         if (strcasecmp(opcao, "voltar") == 0 || strcmp(opcao, "0") == 0) {
             voltar = true;
         } else if (strcasecmp(opcao, "registrar") == 0 || strcasecmp(opcao, "adda") == 0) {
+            tpAluno novoAluno;
+            memset(&novoAluno, 0, sizeof(tpAluno));
             char buffer[150];
 
             lerLinha("CPF: ", buffer, sizeof(buffer));
-            snprintf(tipoAluno.cpf, sizeof(tipoAluno.cpf), "%s", buffer);
+            snprintf(novoAluno.cpf, sizeof(novoAluno.cpf), "%s", buffer);
 
             lerLinha("Nome: ", buffer, sizeof(buffer));
-            snprintf(tipoAluno.nome, sizeof(tipoAluno.nome), "%s", buffer);
+            snprintf(novoAluno.nome, sizeof(novoAluno.nome), "%s", buffer);
 
             lerLinha("Email: ", buffer, sizeof(buffer));
-            snprintf(tipoAluno.email, sizeof(tipoAluno.email), "%s", buffer);
+            snprintf(novoAluno.email, sizeof(novoAluno.email), "%s", buffer);
 
             lerLinha("Senha: ", buffer, sizeof(buffer));
-            snprintf(tipoAluno.senha, sizeof(tipoAluno.senha), "%s", buffer);
+            snprintf(novoAluno.senha, sizeof(novoAluno.senha), "%s", buffer);
 
             lerLinha("Curso: ", buffer, sizeof(buffer));
-            snprintf(tipoAluno.curso, sizeof(tipoAluno.curso), "%s", buffer);
+            snprintf(novoAluno.curso, sizeof(novoAluno.curso), "%s", buffer);
 
             lerLinha("Universidade: ", buffer, sizeof(buffer));
-            snprintf(tipoAluno.universidade, sizeof(tipoAluno.universidade), "%s", buffer);
+            snprintf(novoAluno.universidade, sizeof(novoAluno.universidade), "%s", buffer);
 
-            int status = registrar(&tipoAluno);
+            int status = registrar(&novoAluno);
             switch (status) {
                 case 0:  printf("\nAluno cadastrado com sucesso!\n\n"); break;
                 case 1:  printf("\nFalha ao registrar: já existe um aluno com este CPF.\n\n"); break;
@@ -175,26 +177,23 @@ static void menuAluno(bool *alunoLogado, tpAluno *alunoSessao) {
                 default: printf("\nErro desconhecido ao registrar.\n\n"); break;
             }
         } else if (strcasecmp(opcao, "login") == 0) {
-            char email[100];
+            char cpf[100];
             char senha[100];
 
-            lerLinha("Email: ", email, sizeof(email));
+            lerLinha("CPF: ", cpf, sizeof(cpf));
             lerLinha("Senha: ", senha, sizeof(senha));
 
-            int status = login(email, senha);
+            int status = login(cpf, senha);
             switch (status) {
                 case 0:
                     *alunoLogado = true;
                     memset(alunoSessao, 0, sizeof(tpAluno));
-                    snprintf(alunoSessao->email, sizeof(alunoSessao->email), "%s", email);
-                    snprintf(alunoSessao->senha, sizeof(alunoSessao->senha), "%s", senha);
                     
-                    // Buscar aluno pelo email para carregar dados completos
-                    for (int i = 0; i < qtdAlunos; i++) {
-                        if (strcmp(listaAlunos[i].email, email) == 0) {
-                            *alunoSessao = listaAlunos[i];
-                            break;
-                        }
+                    // Buscar aluno pelo CPF para carregar dados completos
+                    if (read_aluno(cpf, alunoSessao) != 0) {
+                        // Se não conseguir buscar, pelo menos guarda CPF e senha
+                        snprintf(alunoSessao->cpf, sizeof(alunoSessao->cpf), "%s", cpf);
+                        snprintf(alunoSessao->senha, sizeof(alunoSessao->senha), "%s", senha);
                     }
                     break;
                 case 1:

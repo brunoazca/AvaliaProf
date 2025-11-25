@@ -4,8 +4,6 @@
 tpAluno *listaAlunos = NULL; 
 int qtdAlunos = 0;           
 
-tpAluno tipoAluno; // caso queira usar diretamente em main
-
 void listarAlunos() {
     if(qtdAlunos == 0){
         printf("\nNenhum aluno cadastrado ainda.\n\n");
@@ -198,13 +196,13 @@ int delete_aluno(char *cpf) {
     return 1; // Aluno não encontrado -> caso de teste 6
 }
 
-int login(char *email, char *senha) {
-    if(email == NULL || senha == NULL || strlen(email) == 0 || strlen(senha) == 0) {
+int login(char *cpf, char *senha) {
+    if(cpf == NULL || senha == NULL || strlen(cpf) == 0 || strlen(senha) == 0) {
         return 2; // Parâmetro inválido -> caso de teste 15
     }
 
     for(int i = 0; i < qtdAlunos; i++) {
-        if(strcmp(listaAlunos[i].email, email) == 0) {
+        if(strcmp(listaAlunos[i].cpf, cpf) == 0) {
             if(strcmp(listaAlunos[i].senha, senha) == 0) {
                 printf("Login bem-sucedido! Bem-vindo, %s.\n", listaAlunos[i].nome);
                 return 0; // Ok -> caso de teste 13
@@ -214,7 +212,7 @@ int login(char *email, char *senha) {
         }
     }
 
-    return 1; // Falha no login (email não encontrado) -> caso de teste 14
+    return 1; // Falha no login (CPF não encontrado) -> caso de teste 14
 }
 
 void aluno_detach_state(tpAluno **lista, int *quantidade) {

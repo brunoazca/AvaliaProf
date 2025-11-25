@@ -35,6 +35,14 @@ int create_avaliacao(tpAluno *aluno, tpProfessor *professor, tpAvaliacao *avalia
         return 1;
     }
 
+    // Verificar se já existe avaliação do mesmo aluno para o mesmo professor
+    for (int i = 0; i < qtdAvaliacoes; i++) {
+        if (strcmp(listaAvaliacoes[i].aluno.cpf, aluno->cpf) == 0 &&
+            strcmp(listaAvaliacoes[i].professor.cpf, professor->cpf) == 0) {
+            return 1; // Avaliação duplicada
+        }
+    }
+
     // Gerar ID aleatório automaticamente
     gerarIdAleatorio(avaliacao->id, sizeof(avaliacao->id));
     
