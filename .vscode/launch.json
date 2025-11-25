@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/bruno/OneDrive/Documentos/Faculdade/Prog Modular/AvaliaProf",
-      "program": "c:/Users/bruno/OneDrive/Documentos/Faculdade/Prog Modular/AvaliaProf/build/Debug/outDebug",
+      "cwd": "/home/brunocardeman/Documentos/faculdade/Modular/AvaliaProf",
+      "program": "/home/brunocardeman/Documentos/faculdade/Modular/AvaliaProf/principal",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

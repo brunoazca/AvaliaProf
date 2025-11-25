@@ -4,6 +4,8 @@
 typedef struct {
     char codigo[50];
     char nome[150];
+    char universidade[150];
+    char professor[150];
 } tpDisciplina;
 
 extern tpDisciplina *listaDisciplinas;

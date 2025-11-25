@@ -449,7 +449,9 @@ static void menuDisciplina(void) {
 
             lerLinha("Código: ", disciplina.codigo, sizeof(disciplina.codigo));
             lerLinha("Nome: ", disciplina.nome, sizeof(disciplina.nome));
-
+            lerLinha("Universidade: ", disciplina.universidade, sizeof(disciplina.universidade));
+            lerLinha("Professor: ", disciplina.professor, sizeof(disciplina.professor));
+            
             int status = create_disciplina(&disciplina);
             imprimirStatusGenerico("criar disciplina", status);
         } else if (strcasecmp(opcao, "ler") == 0) {
