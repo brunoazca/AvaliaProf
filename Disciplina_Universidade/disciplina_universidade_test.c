@@ -5,6 +5,7 @@
 #include "../Disciplina/disciplina.h"
 #include "../Universidade/universidade.h"
 #include "disciplina_universidade.h"
+#include "disciplina_universidade_test.h"
 
 void run_tests_disciplina_universidade(void) {
     TestSuite suite;

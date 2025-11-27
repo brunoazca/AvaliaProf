@@ -3,6 +3,7 @@
 #include <string.h>
 #include "../tests/test_utils.h"
 #include "disciplina.h"
+#include "disciplina_test.h"
 
 void run_tests_disciplina(void) {
     TestSuite suite;

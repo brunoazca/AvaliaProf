@@ -3,6 +3,7 @@
 #include <string.h>
 #include "../tests/test_utils.h"
 #include "professor.h"
+#include "professor_test.h"
 
 void run_tests_professor(void) {
     TestSuite suite;

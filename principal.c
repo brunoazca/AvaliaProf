@@ -181,7 +181,6 @@ static void menuAluno(bool *alunoLogado, tpAluno *alunoSessao) {
             tpAluno novoAluno;
             memset(&novoAluno, 0, sizeof(tpAluno));
             char buffer[150];
-            char cnpjUniversidade[100] = "";
 
             lerLinha("CPF: ", buffer, sizeof(buffer));
             snprintf(novoAluno.cpf, sizeof(novoAluno.cpf), "%s", buffer);
@@ -198,14 +197,11 @@ static void menuAluno(bool *alunoLogado, tpAluno *alunoSessao) {
             lerLinha("Curso: ", buffer, sizeof(buffer));
             snprintf(novoAluno.curso, sizeof(novoAluno.curso), "%s", buffer);
 
-            lerLinha("CNPJ da Universidade (ou deixe em branco para não vincular): ", cnpjUniversidade, sizeof(cnpjUniversidade));
-
-            int status = registrar(&novoAluno, strlen(cnpjUniversidade) > 0 ? cnpjUniversidade : NULL);
+            int status = registrar(&novoAluno);
             switch (status) {
                 case 0:  printf("\nAluno cadastrado com sucesso!\n\n"); break;
                 case 1:  printf("\nFalha ao registrar: já existe um aluno com este CPF.\n\n"); break;
                 case 2:  printf("\nParâmetro inválido.\n\n"); break;
-                case 3:  printf("\nFalha ao registrar: universidade não encontrada.\n\n"); break;
                 case 99: printf("\nCancelamento por exceção.\n\n"); break;
                 default: printf("\nErro desconhecido ao registrar.\n\n"); break;
             }

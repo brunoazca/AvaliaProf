@@ -3,6 +3,7 @@
 #include <string.h>
 #include "../tests/test_utils.h"
 #include "aluno.h"
+#include "aluno_test.h"
 #include "../Universidade/universidade.h"
 #include "../Aluno_Universidade/aluno_universidade.h"
 
@@ -29,17 +30,13 @@ void run_tests_aluno(void) {
 
     tpAluno alunoBase = create_instancia_aluno("00011122233", "Aluno Teste", "teste@aluno.com");
 
-    test_suite_expect(&suite, "registrar - sucesso sem universidade", 0, registrar(&alunoBase, NULL));
-    test_suite_expect(&suite, "registrar - duplicado", 1, registrar(&alunoBase, NULL));
-    test_suite_expect(&suite, "registrar - parâmetro inválido", 2, registrar(NULL, NULL));
+    test_suite_expect(&suite, "registrar - sucesso", 0, registrar(&alunoBase));
+    test_suite_expect(&suite, "registrar - duplicado", 1, registrar(&alunoBase));
+    test_suite_expect(&suite, "registrar - parâmetro inválido", 2, registrar(NULL));
     
-    // Teste com universidade existente
+    // Teste com outro aluno
     tpAluno alunoComUniv = create_instancia_aluno("00011122244", "Aluno Com Univ", "comuniv@aluno.com");
-    test_suite_expect(&suite, "registrar - sucesso com universidade existente", 0, registrar(&alunoComUniv, universidade.cnpj));
-    
-    // Teste com universidade inexistente
-    tpAluno alunoUnivInexistente = create_instancia_aluno("00011122255", "Aluno Univ Inex", "univinex@aluno.com");
-    test_suite_expect(&suite, "registrar - universidade não encontrada", 3, registrar(&alunoUnivInexistente, "99.999.999/0001-99"));
+    test_suite_expect(&suite, "registrar - sucesso com outro aluno", 0, registrar(&alunoComUniv));
 
     tpAluno alunoLido;
     test_suite_expect(&suite, "read_aluno - parâmetro inválido", 2, read_aluno(NULL, &alunoLido));
@@ -66,7 +63,7 @@ void run_tests_aluno(void) {
     quantidadeAlunos = 0;
     
     tpAluno aluno2 = create_instancia_aluno("11122233344", "Aluno 2", "aluno2@test.com");
-    registrar(&aluno2, NULL);
+    registrar(&aluno2);
     test_suite_expect(&suite, "get_all_alunos - sucesso", 0, get_all_alunos(&listaAlunos, &quantidadeAlunos));
     free(listaAlunos);
 

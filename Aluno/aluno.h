@@ -44,18 +44,15 @@ int delete_aluno(char *cpf);
 /**
  * @brief Registra um novo aluno no sistema
  * @param aluno Ponteiro para a estrutura com os dados do aluno a ser registrado
- * @param cnpjUniversidade CNPJ da universidade para vincular (pode ser NULL ou vazio para não vincular)
- * @return 0 se o registro foi realizado com sucesso, 1 se CPF já existe, 2 se parâmetro inválido, 3 se universidade não encontrada, 99 se erro de memória
+ * @return 0 se o registro foi realizado com sucesso, 1 se CPF já existe, 2 se parâmetro inválido, 99 se erro de memória
  * 
  * @pre aluno != NULL && strlen(aluno->cpf) > 0 && strlen(aluno->nome) > 0
- * @pre Se cnpjUniversidade != NULL && strlen(cnpjUniversidade) > 0: universidade deve existir no sistema
- * @post Se retorno == 0: qtdAlunos foi incrementado em 1, o aluno foi adicionado à lista e vinculado à universidade (se CNPJ fornecido)
+ * @post Se retorno == 0: qtdAlunos foi incrementado em 1 e o aluno foi adicionado à lista
  * @post Se retorno == 1: lista permanece inalterada (CPF duplicado)
  * @post Se retorno == 2: lista permanece inalterada (parâmetro inválido)
- * @post Se retorno == 3: lista permanece inalterada (universidade não encontrada)
  * @post Se retorno == 99: lista permanece inalterada (erro de memória)
  */
-int registrar(tpAluno *aluno, const char *cnpjUniversidade);
+int registrar(tpAluno *aluno);
 
 /**
  * @brief Realiza o login de um aluno no sistema

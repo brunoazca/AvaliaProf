@@ -1,15 +1,14 @@
 #include <stdio.h>
 #include "test_utils.h"
 #include "test_runner.h"
-
-void run_tests_aluno(void);
-void run_tests_universidade(void);
-void run_tests_disciplina(void);
-void run_tests_professor(void);
-void run_tests_avaliacao(void);
-void run_tests_aluno_universidade(void);
-void run_tests_disciplina_universidade(void);
-void run_tests_professor_disciplina(void);
+#include "../Aluno/aluno_test.h"
+#include "../Universidade/universidade_test.h"
+#include "../Disciplina/disciplina_test.h"
+#include "../Professor/professor_test.h"
+#include "../Avaliacao/avaliacao_test.h"
+#include "../Aluno_Universidade/aluno_universidade_test.h"
+#include "../Disciplina_Universidade/disciplina_universidade_test.h"
+#include "../Professor_Disciplina/professor_disciplina_test.h"
 
 void run_all_tests(void) {
     test_utils_reset_overall();

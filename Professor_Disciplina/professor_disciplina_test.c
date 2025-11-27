@@ -5,6 +5,7 @@
 #include "../Disciplina/disciplina.h"
 #include "../Professor/professor.h"
 #include "professor_disciplina.h"
+#include "professor_disciplina_test.h"
 
 void run_tests_professor_disciplina(void) {
     TestSuite suite;

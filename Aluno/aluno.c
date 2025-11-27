@@ -1,6 +1,4 @@
 #include "aluno.h"
-#include "../Universidade/universidade.h"
-#include "../Aluno_Universidade/aluno_universidade.h"
 tpAluno *listaAlunos = NULL; 
 int qtdAlunos = 0;           
 
@@ -60,7 +58,7 @@ void carregarAlunos() {
     listarAlunos();
 }
 
-int registrar(tpAluno *aluno, const char *cnpjUniversidade) {
+int registrar(tpAluno *aluno) {
     // Caso 2: parâmetro inválido
     if(aluno == NULL || strlen(aluno->cpf) == 0 || strlen(aluno->nome) == 0){
         return 2;
@@ -73,16 +71,6 @@ int registrar(tpAluno *aluno, const char *cnpjUniversidade) {
         }
     }
 
-    // Se CNPJ da universidade foi fornecido, verificar se a universidade existe
-    tpUniversidade universidade;
-    int temUniversidade = 0;
-    if(cnpjUniversidade != NULL && strlen(cnpjUniversidade) > 0) {
-        if(read_universidade((char *)cnpjUniversidade, &universidade) != 0) {
-            return 3; // Universidade não encontrada
-        }
-        temUniversidade = 1;
-    }
-
     // Tentar adicionar na lista
     tpAluno *novo = realloc(listaAlunos, (qtdAlunos + 1) * sizeof(tpAluno));
     if(novo == NULL){
@@ -92,11 +80,6 @@ int registrar(tpAluno *aluno, const char *cnpjUniversidade) {
     listaAlunos = novo;
     listaAlunos[qtdAlunos] = *aluno;
     qtdAlunos++;
-
-    // Se CNPJ da universidade foi fornecido, fazer o link
-    if(temUniversidade) {
-        link_aluno_universidade(aluno, &universidade);
-    }
 
     // Impressão de confirmação
     printf("\n[REGISTRADO]\n");

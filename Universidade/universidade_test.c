@@ -3,6 +3,7 @@
 #include <string.h>
 #include "../tests/test_utils.h"
 #include "universidade.h"
+#include "universidade_test.h"
 
 void run_tests_universidade(void) {
     TestSuite suite;
