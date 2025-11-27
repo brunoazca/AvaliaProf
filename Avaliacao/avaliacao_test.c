@@ -23,7 +23,7 @@ void run_tests_avaliacao(void) {
     avaliacao_detach_state(&estadoAvaliacoes, &qtdAvaliacoes);
 
     tpAluno aluno = create_instancia_aluno("88877766655", "Aluno Aval", "aval@aluno.com");
-    registrar(&aluno);
+    registrar(&aluno, NULL);
 
     tpProfessor professor = create_instancia_professor("55544433322", "Prof Aval");
     create_professor(&professor);

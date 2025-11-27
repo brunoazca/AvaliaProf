@@ -23,7 +23,7 @@ void run_tests_aluno_universidade(void) {
 
     tpAluno aluno = create_instancia_aluno("10101010100", "Aluno Rel", "rel@aluno.com");
     tpUniversidade universidade = create_instancia_universidade("10.101.010/0001-00", "Uni Rel");
-    registrar(&aluno);
+    registrar(&aluno, NULL);
     create_universidade(&universidade);
 
     tpAluno alunoNaoCadastrado = create_instancia_aluno("20202020200", "Aluno Rel", "rel@aluno.com");
