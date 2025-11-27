@@ -1,22 +1,2 @@
 [
-  {
-    "disciplinaCodigo": "INF1040",
-    "universidadeCnpj": "1234"
-  },
-  {
-    "disciplinaCodigo": "INF1009",
-    "universidadeCnpj": "1234"
-  },
-  {
-    "disciplinaCodigo": "DISC1",
-    "universidadeCnpj": "DISC1"
-  },
-  {
-    "disciplinaCodigo": "DISC2",
-    "universidadeCnpj": "DISC2"
-  },
-  {
-    "disciplinaCodigo": "DPD1",
-    "universidadeCnpj": "DPD1"
-  }
 ]
