@@ -1,7 +1,7 @@
 #include "professor.h"
 
-tpProfessor *listaProfessores = NULL;
-int qtdProfessores = 0;
+static tpProfessor *listaProfessores = NULL;
+static int qtdProfessores = 0;
 
 static const char *ARQ_PROFESSORES = "Professor/dados.json";
 

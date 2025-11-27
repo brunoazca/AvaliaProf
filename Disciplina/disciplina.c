@@ -6,8 +6,8 @@
 #include "../Professor_Disciplina/professor_disciplina.h"
 #include "../Disciplina_Universidade/disciplina_universidade.h"
 #include "../Professor/professor.h"
-tpDisciplina *listaDisciplinas = NULL;
-int qtdDisciplinas = 0;
+static tpDisciplina *listaDisciplinas = NULL;
+static int qtdDisciplinas = 0;
 
 static void listarDisciplinas(void);
 static const char *ARQ_DISCIPLINAS = "Disciplina/dados.json";

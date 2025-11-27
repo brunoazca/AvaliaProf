@@ -1,6 +1,6 @@
 #include "aluno.h"
-tpAluno *listaAlunos = NULL; 
-int qtdAlunos = 0;           
+static tpAluno *listaAlunos = NULL; 
+static int qtdAlunos = 0;           
 
 void listarAlunos() {
     if(qtdAlunos == 0){

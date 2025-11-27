@@ -3,8 +3,8 @@
 #include <string.h>
 #include "universidade.h"
 
-tpUniversidade *listaUniversidades = NULL;
-int qtdUniversidades = 0;
+static tpUniversidade *listaUniversidades = NULL;
+static int qtdUniversidades = 0;
 
 static void listarUniversidades(void);
 static const char *ARQ_UNIVERSIDADES = "Universidade/dados.json";
